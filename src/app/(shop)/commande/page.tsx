@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { shopConfig } from "@/config/shop";
 import { prisma } from "@/lib/db";
+import { onlinePaymentAvailable } from "@/lib/payments";
 import { getSettings } from "@/lib/settings";
 import { CheckoutForm } from "./CheckoutForm";
 
@@ -18,6 +19,7 @@ export default async function CheckoutPage() {
       pickupEnabled={settings.pickupEnabled}
       pickupAddress={shopConfig.pickup.address}
       codEnabled={settings.codEnabled}
+      onlineEnabled={onlinePaymentAvailable()}
     />
   );
 }

@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from "crypto";
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
+import { put } from "@vercel/blob";
 import sharp from "sharp";
 
 export const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
@@ -45,7 +46,16 @@ class CloudinaryImageStorage implements ImageStorage {
   }
 }
 
+/** Vercel Blob : BLOB_READ_WRITE_TOKEN est ajouté automatiquement quand le stockage Blob est relié au projet Vercel. */
+class VercelBlobImageStorage implements ImageStorage {
+  async put(data: Buffer, name: string) {
+    const blob = await put(`produits/${name}`, data, { access: "public", contentType: "image/webp", addRandomSuffix: false });
+    return blob.url;
+  }
+}
+
 export function getImageStorage(): ImageStorage {
+  if (process.env.IMAGE_STORAGE === "vercel-blob" || (!process.env.IMAGE_STORAGE && process.env.BLOB_READ_WRITE_TOKEN)) return new VercelBlobImageStorage();
   const { IMAGE_STORAGE, CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
   if (IMAGE_STORAGE === "cloudinary" && CLOUDINARY_CLOUD_NAME && CLOUDINARY_API_KEY && CLOUDINARY_API_SECRET)
     return new CloudinaryImageStorage(CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET);

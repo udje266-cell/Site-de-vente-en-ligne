@@ -6,8 +6,8 @@ import { notifySeller, notifyStatusChanged } from "@/lib/notify";
 import { OrderError } from "@/lib/orders/errors";
 import { applyTransition, lockOrder, transitionOrder } from "@/lib/orders/transition";
 import { getPaymentProvider } from "./index";
+import { appUrl } from "@/lib/app-url";
 
-const appUrl = () => process.env.APP_URL ?? "http://localhost:3000";
 
 /** Ajoute une entrée au journal Payment.rawPayload (sans données sensibles). */
 function logEntry(kind: string, data: unknown): Prisma.InputJsonValue {

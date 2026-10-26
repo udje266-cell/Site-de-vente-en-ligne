@@ -4,11 +4,11 @@ import "@fontsource-variable/archivo/wdth.css";
 import "@fontsource/atkinson-hyperlegible/400.css";
 import "@fontsource/atkinson-hyperlegible/700.css";
 import "./globals.css";
+import { appUrl } from "@/lib/app-url";
 
-const appUrl = process.env.APP_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(appUrl),
+  metadataBase: new URL(appUrl()),
   title: { default: shopConfig.name, template: `%s | ${shopConfig.name}` },
   description: shopConfig.tagline,
   openGraph: { type: "website", locale: "fr_CI", siteName: shopConfig.name },

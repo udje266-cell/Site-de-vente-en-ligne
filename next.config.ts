@@ -6,7 +6,7 @@ const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://res.cloudinary.com",
+  "img-src 'self' data: blob: https://res.cloudinary.com https://*.public.blob.vercel-storage.com",
   "font-src 'self'",
   "connect-src 'self'",
   "frame-ancestors 'none'",
@@ -20,7 +20,10 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   images: {
     formats: ["image/avif", "image/webp"],
-    remotePatterns: [{ protocol: "https", hostname: "res.cloudinary.com" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+    ],
   },
   experimental: { serverActions: { bodySizeLimit: "10mb" } },
   async headers() {

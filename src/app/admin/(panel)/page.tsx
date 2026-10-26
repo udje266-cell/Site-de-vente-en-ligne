@@ -2,6 +2,7 @@ import Link from "next/link";
 import { shopConfig } from "@/config/shop";
 import { prisma } from "@/lib/db";
 import { formatPrice } from "@/lib/format";
+import { expireStalePayments } from "@/lib/payments/process";
 
 /** Début du jour/semaine/mois dans le fuseau Africa/Abidjan (UTC+0, sans heure d'été). */
 function periodStarts(now = new Date()) {
@@ -15,6 +16,8 @@ function periodStarts(now = new Date()) {
 const revenueStatuses = ["PAID", "CONFIRMED", "PREPARED", "SHIPPED", "DELIVERED"] as const;
 
 export default async function Dashboard() {
+  // Les paiements abandonnés sont aussi annulés ici (la tâche planifiée ne tourne qu'une fois par jour sur Vercel Hobby)
+  await expireStalePayments().catch((e) => console.error("[admin] expiration", e));
   const { day, week, month } = periodStarts();
   const revenue = async (from: Date) => {
     const r = await prisma.order.aggregate({

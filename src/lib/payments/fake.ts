@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import type { CheckPaymentResult, CheckedStatus, InitPaymentInput, InitPaymentResult, PaymentProvider } from "./types";
+import { appUrl } from "@/lib/app-url";
 
 /**
  * Fournisseur factice (dev + tests e2e, PAYMENT_PROVIDER=fake).
@@ -17,7 +18,7 @@ export class FakePaymentProvider implements PaymentProvider {
   readonly name = "FAKE";
 
   async initPayment(input: InitPaymentInput): Promise<InitPaymentResult> {
-    const base = process.env.APP_URL ?? "http://localhost:3000";
+    const base = appUrl();
     return { paymentUrl: `${base}/paiement/fake/${encodeURIComponent(input.transactionId)}`, raw: { fake: true } };
   }
 

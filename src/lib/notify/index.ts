@@ -4,8 +4,8 @@ import { formatPrice } from "@/lib/format";
 import { getSettings } from "@/lib/settings";
 import { getMailer } from "./mailer";
 import { getSmsSender } from "./sms";
+import { appUrl } from "@/lib/app-url";
 
-const appUrl = () => process.env.APP_URL ?? "http://localhost:3000";
 
 /** N'interrompt jamais le flux métier : les erreurs d'envoi sont journalisées. */
 async function safe(label: string, fn: () => Promise<void>) {

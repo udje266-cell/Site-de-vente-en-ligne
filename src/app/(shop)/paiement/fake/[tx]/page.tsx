@@ -2,26 +2,28 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { formatPrice } from "@/lib/format";
 import { setFakeOutcome } from "@/lib/payments/fake";
+import { fakePaymentsAllowed } from "@/lib/payments";
+import { appUrl } from "@/lib/app-url";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Paiement (simulation)", robots: { index: false } };
 
 /** Simule l'écran de paiement CinetPay (uniquement avec PAYMENT_PROVIDER=fake). */
 export default async function FakePaymentPage({ params }: { params: Promise<{ tx: string }> }) {
-  if (process.env.PAYMENT_PROVIDER === "cinetpay") notFound();
+  if (!fakePaymentsAllowed()) notFound();
   const { tx } = await params;
   const payment = await prisma.payment.findUnique({ where: { transactionId: decodeURIComponent(tx) }, include: { order: true } });
   if (!payment) notFound();
 
   async function decide(formData: FormData) {
     "use server";
-    if (process.env.PAYMENT_PROVIDER === "cinetpay") return;
+    if (!fakePaymentsAllowed()) return;
     const outcome = formData.get("outcome");
     const p = payment!;
     if (outcome === "ACCEPTED" || outcome === "REFUSED") {
       await setFakeOutcome(p.transactionId, outcome, p.amount);
       // Simule la notification serveur-à-serveur envoyée par CinetPay
-      const base = process.env.APP_URL ?? "http://localhost:3000";
+      const base = appUrl();
       await fetch(`${base}/api/payments/notify`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },

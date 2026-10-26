@@ -10,7 +10,7 @@ import { placeOrder, type CheckoutState } from "./actions";
 
 type Zone = { id: string; name: string; fee: number; etaLabel: string };
 
-export function CheckoutForm(props: { zones: Zone[]; pickupEnabled: boolean; pickupAddress: string; codEnabled: boolean }) {
+export function CheckoutForm(props: { zones: Zone[]; pickupEnabled: boolean; pickupAddress: string; codEnabled: boolean; onlineEnabled: boolean }) {
   const { lines, ready } = useCart();
   const [state, action, pending] = useActionState<CheckoutState, FormData>(placeOrder, {});
   const [pickup, setPickup] = useState(false);
@@ -105,11 +105,17 @@ export function CheckoutForm(props: { zones: Zone[]; pickupEnabled: boolean; pic
             </label>
           ) : null}
           {props.codEnabled && !codAllowed ? <p className="text-sm text-stone-600">Au-delà de ce montant, seul le paiement en ligne est possible.</p> : null}
-          <label className="flex min-h-11 items-center gap-2">
-            <input type="radio" name="paymentMethod" value="CINETPAY" checked={effectiveMethod === "CINETPAY"} onChange={() => setMethod("CINETPAY")} className="h-5 w-5" />
-            {paymentMethodLabels.CINETPAY}
-          </label>
-          <p className="text-xs text-stone-600">Orange Money, MTN MoMo, Moov Money, Wave, Visa/Mastercard. Vous serez redirigé vers la page sécurisée CinetPay.</p>
+          {props.onlineEnabled ? (
+            <>
+              <label className="flex min-h-11 items-center gap-2">
+                <input type="radio" name="paymentMethod" value="CINETPAY" checked={effectiveMethod === "CINETPAY"} onChange={() => setMethod("CINETPAY")} className="h-5 w-5" />
+                {paymentMethodLabels.CINETPAY}
+              </label>
+              <p className="text-xs text-stone-600">Orange Money, MTN MoMo, Moov Money, Wave, Visa/Mastercard. Vous serez redirigé vers la page sécurisée CinetPay.</p>
+            </>
+          ) : (
+            <p className="text-sm text-stone-600">Paiement Mobile Money bientôt disponible.</p>
+          )}
         </fieldset>
       </div>
 

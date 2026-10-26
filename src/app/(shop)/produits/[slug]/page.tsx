@@ -8,6 +8,7 @@ import { prisma } from "@/lib/db";
 import { formatPrice } from "@/lib/format";
 import { renderMarkdown } from "@/lib/markdown";
 import { getSettings } from "@/lib/settings";
+import { appUrl } from "@/lib/app-url";
 
 export const revalidate = 300;
 
@@ -29,7 +30,6 @@ const getProduct = cache((slug: string) =>
   }),
 );
 
-const appUrl = process.env.APP_URL ?? "http://localhost:3000";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await getProduct((await params).slug);
@@ -48,14 +48,14 @@ export default async function ProductPage({ params }: Props) {
   const product = await getProduct((await params).slug);
   if (!product || product.variants.length === 0) notFound();
   const settings = await getSettings();
-  const url = `${appUrl}/produits/${product.slug}`;
+  const url = `${appUrl()}/produits/${product.slug}`;
   const totalStock = product.variants.reduce((s, v) => s + v.stock, 0);
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    image: product.images.map((i) => new URL(i.url, appUrl).toString()),
+    image: product.images.map((i) => new URL(i.url, appUrl()).toString()),
     description: product.description,
     sku: product.variants[0]?.sku,
     offers: {

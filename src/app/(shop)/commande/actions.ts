@@ -6,7 +6,8 @@ import { OrderError } from "@/lib/orders/errors";
 import { checkoutSchema } from "@/lib/orders/schema";
 import { orderToken } from "@/lib/orders/token";
 import { notifyOrderCreated } from "@/lib/notify";
-import { startOnlinePayment } from "@/lib/payments/process";
+import { onlinePaymentAvailable } from "@/lib/payments";
+import { expireStalePayments, startOnlinePayment } from "@/lib/payments/process";
 
 export type CheckoutState = { error?: string; fieldErrors?: Record<string, string> };
 
@@ -41,6 +42,13 @@ export async function placeOrder(_prev: CheckoutState, formData: FormData): Prom
     }
     return { error: "Merci de corriger les champs indiqués.", fieldErrors };
   }
+
+  if (parsed.data.paymentMethod === "CINETPAY" && !onlinePaymentAvailable()) {
+    return { error: "Le paiement en ligne n'est pas encore disponible. Choisissez le paiement à la livraison." };
+  }
+  // Libère le stock des paiements abandonnés avant de vérifier la disponibilité
+  // (complète la tâche planifiée, limitée à une fois par jour sur l'offre gratuite de Vercel).
+  await expireStalePayments().catch((e) => console.error("[checkout] expiration", e));
 
   let target: string;
   try {
