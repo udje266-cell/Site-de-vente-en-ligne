@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+/* Couleurs de la boutique (PLACEHOLDER, à aligner sur src/config/shop.ts) */
+@theme {
+  --color-brand: #9a3412;
+  --color-brand-dark: #7c2d12;
+  --color-accent: #ca8a04;
+  --color-cream: #fffbf3;
+}
+
+body {
+  background: var(--color-cream);
+  color: #1c1917;
+}
+
+@utility btn {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2 font-semibold transition disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-brand text-white hover:bg-brand-dark;
+}
+@utility btn-outline {
+  @apply btn border border-stone-300 bg-white text-stone-900 hover:bg-stone-50;
+}
+@utility btn-wa {
+  @apply btn bg-[#1a7f45] text-white hover:bg-[#146636];
+}
+@utility input {
+  @apply min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30;
+}
+@utility label {
+  @apply mb-1 block text-sm font-medium text-stone-800;
+}
+@utility card {
+  @apply rounded-xl border border-stone-200 bg-white;
+}
+.prose-shop h1 { @apply mb-4 text-2xl font-bold; }
+.prose-shop h2 { @apply mt-6 mb-2 text-xl font-semibold; }
+.prose-shop p, .prose-shop ul, .prose-shop ol { @apply mb-3 leading-relaxed; }
+.prose-shop ul { @apply list-disc pl-6; }
+.prose-shop ol { @apply list-decimal pl-6; }
+.prose-shop a { @apply text-brand underline; }
