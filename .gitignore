@@ -8,3 +8,4 @@ playwright-report
 test-results
 public/uploads
 .next-e2e
+captures

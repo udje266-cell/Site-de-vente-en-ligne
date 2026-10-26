@@ -38,7 +38,8 @@ export function CheckoutForm(props: { zones: Zone[]; pickupEnabled: boolean; pic
   return (
     <form action={action} className="mx-auto grid max-w-4xl gap-6 md:grid-cols-[1fr_320px]">
       <input type="hidden" name="items" value={JSON.stringify(lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })))} />
-      <input type="hidden" name="promoCode" value={promo} />
+      {/* Un code refusé par le devis n'est pas envoyé : il ne doit pas bloquer la commande */}
+      <input type="hidden" name="promoCode" value={quote?.promoError ? "" : promo} />
       <div className="space-y-5">
         <h1 className="text-2xl font-bold">Finaliser la commande</h1>
         <fieldset className="card space-y-3 p-4">
