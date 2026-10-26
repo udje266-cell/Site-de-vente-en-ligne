@@ -10,8 +10,8 @@ export const shopConfig = {
   logo: "/logo.svg", // PLACEHOLDER : remplacer public/logo.svg
   colors: {
     // PLACEHOLDER : couleurs principales (aussi définies dans src/app/globals.css)
-    primary: "#9a3412",
-    accent: "#ca8a04",
+    primary: "#1e2b4a",
+    accent: "#f2a900",
   },
   whatsapp: "+2250700000000", // PLACEHOLDER (format +225XXXXXXXXXX)
   email: "contact@example.com", // PLACEHOLDER

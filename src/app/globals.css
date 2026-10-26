@@ -1,42 +1,73 @@
 @import "tailwindcss";
 
-/* Couleurs de la boutique (PLACEHOLDER, à aligner sur src/config/shop.ts) */
+/*
+ * Identité visuelle (voir docs/design.md).
+ * Indigo des toiles de Korhogo pour la structure, miel pour les actions.
+ * Les couleurs définitives de la boutique remplaceront ces valeurs.
+ */
 @theme {
-  --color-brand: #9a3412;
-  --color-brand-dark: #7c2d12;
-  --color-accent: #ca8a04;
-  --color-cream: #fffbf3;
+  --color-brand: #1e2b4a; /* indigo Korhogo */
+  --color-brand-dark: #141d33;
+  --color-accent: #f2a900; /* miel */
+  --color-accent-dark: #d99600;
+  --color-mil: #ede3c8;
+  --color-karite: #f4f0e2;
+  --color-nere: #2e6b4e;
+  --color-ink: #141b2d;
+  --font-sans: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --font-display: "Archivo Variable", "Arial Narrow", system-ui, sans-serif;
 }
 
 body {
-  background: var(--color-cream);
-  color: #1c1917;
+  background: #ffffff;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+h1, h2, h3, .display {
+  font-family: var(--font-display);
+  font-stretch: 75%;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
 }
 
 @utility btn {
-  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2 font-semibold transition disabled:opacity-50;
+  @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-5 py-2 font-bold disabled:opacity-50;
 }
 @utility btn-primary {
-  @apply btn bg-brand text-white hover:bg-brand-dark;
+  @apply btn bg-accent text-ink hover:bg-accent-dark;
 }
 @utility btn-outline {
-  @apply btn border border-stone-300 bg-white text-stone-900 hover:bg-stone-50;
+  @apply btn border-2 border-brand bg-white text-brand hover:bg-karite;
 }
 @utility btn-wa {
   @apply btn bg-[#1a7f45] text-white hover:bg-[#146636];
 }
 @utility input {
-  @apply min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30;
+  @apply min-h-12 w-full rounded-md border-2 border-stone-300 bg-white px-3 py-2 text-base focus:border-brand focus:outline-none;
 }
 @utility label {
-  @apply mb-1 block text-sm font-medium text-stone-800;
+  @apply mb-1 block text-sm font-bold text-ink;
 }
 @utility card {
-  @apply rounded-xl border border-stone-200 bg-white;
+  @apply rounded-md border border-stone-200 bg-white;
 }
-.prose-shop h1 { @apply mb-4 text-2xl font-bold; }
-.prose-shop h2 { @apply mt-6 mb-2 text-xl font-semibold; }
-.prose-shop p, .prose-shop ul, .prose-shop ol { @apply mb-3 leading-relaxed; }
+
+.prose-shop h1 { @apply mb-4 text-3xl; }
+.prose-shop h2 { @apply mt-6 mb-2 text-2xl; }
+.prose-shop p, .prose-shop ul, .prose-shop ol { @apply mb-3 max-w-prose leading-relaxed; }
 .prose-shop ul { @apply list-disc pl-6; }
 .prose-shop ol { @apply list-decimal pl-6; }
 .prose-shop a { @apply text-brand underline; }

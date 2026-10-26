@@ -36,7 +36,7 @@ export function ProductPurchase(props: {
           <legend className="label">Choisir</legend>
           <div className="flex flex-wrap gap-2">
             {props.variants.map((x) => (
-              <label key={x.id} className={`btn cursor-pointer border ${x.id === variantId ? "border-brand bg-brand/10" : "border-stone-300 bg-white"} ${x.stock <= 0 ? "opacity-60" : ""}`}>
+              <label key={x.id} className={`btn cursor-pointer border ${x.id === variantId ? "border-brand bg-brand text-white" : "border-2 border-stone-300 bg-white"} ${x.stock <= 0 ? "opacity-60" : ""}`}>
                 <input type="radio" name="variant" value={x.id} checked={x.id === variantId} onChange={() => { setVariantId(x.id); setAdded(false); }} className="sr-only" />
                 {x.label}
               </label>

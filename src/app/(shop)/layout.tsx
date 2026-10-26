@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CartBadge } from "@/components/cart/CartBadge";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { SearchBox } from "@/components/SearchBox";
+import { KorhogoBand } from "@/components/KorhogoBand";
 import { FloatingWhatsApp } from "@/components/WhatsAppButton";
 import { shopConfig } from "@/config/shop";
 import { getCategories } from "@/lib/catalog";
@@ -15,11 +16,11 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
       <a href="#contenu" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:bg-white focus:p-2">
         Aller au contenu
       </a>
-      <header className="sticky top-0 z-30 bg-brand text-white shadow">
+      <header className="sticky top-0 z-30 bg-brand text-white">
         <div className="mx-auto flex max-w-6xl items-center gap-2 px-3 py-2">
           <Link href="/" className="flex min-h-11 shrink-0 items-center gap-2 font-bold">
-            <Image src={shopConfig.logo} alt="" width={32} height={32} priority />
-            <span className="hidden sm:inline">{settings.shopName}</span>
+            <Image src={shopConfig.logo} alt="" width={36} height={36} priority />
+            <span className="display hidden text-xl sm:inline">{settings.shopName}</span>
             <span className="sr-only sm:hidden">{settings.shopName} – accueil</span>
           </Link>
           <div className="flex-1">
@@ -27,8 +28,8 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
           </div>
           <CartBadge />
         </div>
-        <nav aria-label="Catégories" className="bg-brand-dark">
-          <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-3 text-sm">
+        <nav aria-label="Catégories" className="border-t border-white/15">
+          <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-3 text-[0.95rem]">
             {categories.map((c) => (
               <li key={c.id}>
                 <Link href={`/categories/${c.slug}`} className="flex min-h-11 items-center whitespace-nowrap px-2 hover:underline">
@@ -44,13 +45,14 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
           </ul>
         </nav>
       </header>
-      <main id="contenu" className="mx-auto max-w-6xl px-3 py-4">
+      <main id="contenu" className="mx-auto max-w-6xl px-4 py-6">
         {children}
       </main>
-      <footer className="mt-12 bg-stone-900 text-stone-200">
+      <footer className="mt-16 bg-brand text-white/85">
+        <KorhogoBand className="block" color="#f2a900" />
         <div className="mx-auto grid max-w-6xl gap-6 px-3 py-8 text-sm sm:grid-cols-3">
           <div>
-            <p className="font-bold text-white">{settings.shopName}</p>
+            <p className="display text-2xl text-white">{settings.shopName}</p>
             <p className="mt-1">{shopConfig.tagline}</p>
             <p className="mt-1">{shopConfig.city}, Côte d&apos;Ivoire</p>
           </div>
@@ -74,7 +76,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
             </ul>
           </nav>
           <div>
-            <p className="font-semibold text-white">Suivez-nous</p>
+            <p className="font-bold text-white">Suivez-nous</p>
             <ul className="mt-1 flex gap-4">
               <li><a href={shopConfig.social.facebook} rel="noopener noreferrer" target="_blank" className="inline-block py-2 hover:underline">Facebook</a></li>
               <li><a href={shopConfig.social.instagram} rel="noopener noreferrer" target="_blank" className="inline-block py-2 hover:underline">Instagram</a></li>

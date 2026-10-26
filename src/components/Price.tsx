@@ -3,8 +3,8 @@ import { formatPrice } from "@/lib/format";
 export function Price({ price, compareAt, from, className = "" }: { price: number; compareAt?: number | null; from?: boolean; className?: string }) {
   return (
     <span className={`inline-flex flex-wrap items-baseline gap-x-2 ${className}`}>
-      <span className="font-bold text-stone-900">
-        {from ? "À partir de " : ""}
+      <span className="display text-[1.35em] leading-tight text-ink">
+        {from ? <span className="font-sans text-[0.7em] font-normal">dès </span> : null}
         {formatPrice(price)}
       </span>
       {compareAt ? (
