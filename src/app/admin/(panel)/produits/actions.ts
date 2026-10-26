@@ -34,7 +34,26 @@ const productSchema = z.object({
   description: z.string().max(10000).default(""),
   leadTimeNote: z.string().trim().max(120).optional(),
   isFeatured: z.boolean(),
+  usage: z.enum(["ALIMENTAIRE", "COSMETIQUE", "ALIMENTAIRE_ET_COSMETIQUE"]).optional(),
+  ingredients: z.string().trim().max(1000).optional(),
+  storage: z.string().trim().max(500).optional(),
+  origin: z.string().trim().max(200).optional(),
 });
+
+/** Champs produit lus depuis le formulaire (chaîne vide = non renseigné). */
+function productFields(fd: FormData) {
+  return {
+    name: str(fd, "name"),
+    categoryId: str(fd, "categoryId") || undefined,
+    description: str(fd, "description") ?? "",
+    leadTimeNote: str(fd, "leadTimeNote") || undefined,
+    isFeatured: fd.get("isFeatured") === "on",
+    usage: str(fd, "usage") || undefined,
+    ingredients: str(fd, "ingredients") || undefined,
+    storage: str(fd, "storage") || undefined,
+    origin: str(fd, "origin") || undefined,
+  };
+}
 
 const variantSchema = z.object({
   label: z.string().trim().min(1, "Libellé requis").max(80),
@@ -43,6 +62,7 @@ const variantSchema = z.object({
   compareAtPrice: optionalMoney,
   stock: z.coerce.number().int().min(0).max(1_000_000),
   sku: z.string().trim().max(60).optional(),
+  netWeight: z.string().trim().max(60).optional(),
 });
 
 function str(fd: FormData, k: string) {
@@ -77,13 +97,7 @@ function firstError(e: z.ZodError) {
 /** Création rapide : un seul écran (nom, prix, stock, photo). Les variantes supplémentaires s'ajoutent ensuite. */
 export async function createProduct(_prev: FormState, fd: FormData): Promise<FormState> {
   await requireAdmin();
-  const p = productSchema.safeParse({
-    name: str(fd, "name"),
-    categoryId: str(fd, "categoryId") || undefined,
-    description: str(fd, "description") ?? "",
-    leadTimeNote: str(fd, "leadTimeNote") || undefined,
-    isFeatured: fd.get("isFeatured") === "on",
-  });
+  const p = productSchema.safeParse(productFields(fd));
   if (!p.success) return { error: firstError(p.error) };
   const v = variantSchema.safeParse({
     label: str(fd, "label") || "Standard",
@@ -91,6 +105,7 @@ export async function createProduct(_prev: FormState, fd: FormData): Promise<For
     price: str(fd, "price"),
     compareAtPrice: str(fd, "compareAtPrice"),
     stock: str(fd, "stock"),
+    netWeight: str(fd, "netWeight") || undefined,
   });
   if (!v.success) return { error: firstError(v.error) };
   const slug = await uniqueSlug(p.data.name);
@@ -107,6 +122,7 @@ export async function createProduct(_prev: FormState, fd: FormData): Promise<For
             attributes: parseAttributes(v.data.attributes),
             price: v.data.price,
             compareAtPrice: v.data.compareAtPrice ?? null,
+            netWeight: v.data.netWeight ?? null,
             stock: v.data.stock,
           },
         },
@@ -124,17 +140,20 @@ export async function createProduct(_prev: FormState, fd: FormData): Promise<For
 export async function updateProduct(_prev: FormState, fd: FormData): Promise<FormState> {
   await requireAdmin();
   const id = str(fd, "id")!;
-  const p = productSchema.safeParse({
-    name: str(fd, "name"),
-    categoryId: str(fd, "categoryId") || undefined,
-    description: str(fd, "description") ?? "",
-    leadTimeNote: str(fd, "leadTimeNote") || undefined,
-    isFeatured: fd.get("isFeatured") === "on",
-  });
+  const p = productSchema.safeParse(productFields(fd));
   if (!p.success) return { error: firstError(p.error) };
   await prisma.product.update({
     where: { id },
-    data: { ...p.data, categoryId: p.data.categoryId ?? null, leadTimeNote: p.data.leadTimeNote ?? null, isActive: fd.get("isActive") === "on" },
+    data: {
+      ...p.data,
+      categoryId: p.data.categoryId ?? null,
+      leadTimeNote: p.data.leadTimeNote ?? null,
+      usage: p.data.usage ?? null,
+      ingredients: p.data.ingredients ?? null,
+      storage: p.data.storage ?? null,
+      origin: p.data.origin ?? null,
+      isActive: fd.get("isActive") === "on",
+    },
   });
   revalidateShop();
   return { ok: "Produit enregistré." };
@@ -180,6 +199,7 @@ export async function saveVariant(_prev: FormState, fd: FormData): Promise<FormS
     compareAtPrice: str(fd, "compareAtPrice"),
     stock: str(fd, "stock"),
     sku: str(fd, "sku") || undefined,
+    netWeight: str(fd, "netWeight") || undefined,
   });
   if (!v.success) return { error: firstError(v.error) };
   const data = {
@@ -187,6 +207,7 @@ export async function saveVariant(_prev: FormState, fd: FormData): Promise<FormS
     attributes: parseAttributes(v.data.attributes),
     price: v.data.price,
     compareAtPrice: v.data.compareAtPrice ?? null,
+    netWeight: v.data.netWeight ?? null,
     stock: v.data.stock,
     isActive: fd.get("isActive") === "on",
   };
@@ -228,6 +249,10 @@ export async function duplicateProduct(fd: FormData) {
       description: src.description,
       categoryId: src.categoryId,
       leadTimeNote: src.leadTimeNote,
+      usage: src.usage,
+      ingredients: src.ingredients,
+      storage: src.storage,
+      origin: src.origin,
       isActive: false,
       images: { create: src.images.map(({ url, alt, width, height, position }) => ({ url, alt, width, height, position })) },
       variants: {
@@ -237,6 +262,7 @@ export async function duplicateProduct(fd: FormData) {
           attributes: v.attributes ?? {},
           price: v.price,
           compareAtPrice: v.compareAtPrice,
+          netWeight: v.netWeight,
           stock: 0,
           isActive: v.isActive,
           position: v.position,

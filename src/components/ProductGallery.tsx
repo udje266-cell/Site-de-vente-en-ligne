@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { ProductImage } from "./ProductImage";
 
 type Img = { url: string; alt: string };
 
@@ -9,10 +10,10 @@ export function ProductGallery({ images, name }: { images: Img[]; name: string }
   const [current, setCurrent] = useState(0);
   const dialog = useRef<HTMLDialogElement>(null);
   const img = images[current];
-  if (!img) return <div className="aspect-square rounded-xl bg-stone-100" />;
+  if (!img) return <ProductImage alt={name} sizes="(max-width: 768px) 100vw, 50vw" />;
   return (
     <div>
-      <button type="button" onClick={() => dialog.current?.showModal()} className="relative block aspect-square w-full overflow-hidden rounded-xl bg-stone-100" aria-label="Agrandir la photo">
+      <button type="button" onClick={() => dialog.current?.showModal()} className="relative block aspect-square w-full overflow-hidden rounded-md bg-karite" aria-label="Agrandir la photo">
         <Image src={img.url} alt={img.alt || name} fill priority sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
       </button>
       {images.length > 1 ? (
@@ -26,7 +27,7 @@ export function ProductGallery({ images, name }: { images: Img[]; name: string }
           ))}
         </ul>
       ) : null}
-      <dialog ref={dialog} className="m-auto max-h-[95dvh] max-w-[95vw] rounded-xl p-0 backdrop:bg-black/80" onClick={() => dialog.current?.close()}>
+      <dialog ref={dialog} className="m-auto max-h-[95dvh] max-w-[95vw] overscroll-contain rounded-md p-0 backdrop:bg-black/80" onClick={() => dialog.current?.close()}>
         <div className="relative h-[90dvh] w-[95vw] max-w-4xl">
           <Image src={img.url} alt={img.alt || name} fill sizes="95vw" className="object-contain" />
         </div>

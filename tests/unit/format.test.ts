@@ -22,3 +22,19 @@ describe("format", () => {
     expect(slugify("Miel d'acacia Épicé")).toBe("miel-d-acacia-epice");
   });
 });
+
+import { buildOrderMessage, waLink } from "@/lib/whatsapp";
+
+describe("WhatsApp", () => {
+  it("message de commande : produit, format, quantité, prix et lien", () => {
+    const msg = buildOrderMessage({ shopName: "Noh's Shop", productName: "Miel de forêt", format: "500 g", quantity: 2, unitPrice: 5500, url: "https://exemple.ci/produits/miel-de-foret" });
+    expect(msg).toContain("- Produit : Miel de forêt");
+    expect(msg).toContain("- Format : 500 g");
+    expect(msg).toContain("- Quantité : 2");
+    expect(msg).toContain("11 000 FCFA");
+    expect(msg).toContain("Lien : https://exemple.ci/produits/miel-de-foret");
+  });
+  it("lien wa.me avec le numéro sans + ni espaces", () => {
+    expect(waLink("+225 01 01 11 40 70", "a b")).toBe("https://wa.me/2250101114070?text=a%20b");
+  });
+});

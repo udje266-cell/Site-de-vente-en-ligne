@@ -1,4 +1,5 @@
 import { ActionForm } from "@/components/admin/ActionForm";
+import { ProductInfoFields } from "@/components/admin/ProductInfoFields";
 import { prisma } from "@/lib/db";
 import { createProduct } from "../actions";
 
@@ -31,7 +32,11 @@ export default async function NewProduct() {
           </div>
           <div>
             <label htmlFor="label" className="label">Format</label>
-            <input id="label" name="label" placeholder="Ex. 500 g" className="input" />
+            <input id="label" name="label" placeholder="Ex. 500 g…" className="input" />
+          </div>
+          <div className="col-span-2">
+            <label htmlFor="netWeight" className="label">Poids ou contenance nets (facultatif)</label>
+            <input id="netWeight" name="netWeight" placeholder="Ex. 500 g net…" className="input" />
           </div>
         </div>
         <div>
@@ -45,6 +50,7 @@ export default async function NewProduct() {
           <label htmlFor="description" className="label">Description</label>
           <textarea id="description" name="description" rows={4} className="input" />
         </div>
+        <ProductInfoFields />
         <label className="flex min-h-11 items-center gap-2">
           <input type="checkbox" name="isFeatured" className="h-5 w-5" /> Mettre en avant
         </label>

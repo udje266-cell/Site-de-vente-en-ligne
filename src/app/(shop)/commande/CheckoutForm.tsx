@@ -25,7 +25,8 @@ export function CheckoutForm(props: { zones: Zone[]; pickupEnabled: boolean; pic
   if (lines.length === 0)
     return (
       <div className="py-10 text-center">
-        <p>{t.emptyCart}</p>
+        <h1 className="text-3xl">Finaliser la commande</h1>
+        <p className="mt-2">{t.emptyCart}</p>
         <Link href="/" className="btn-primary mt-4">Voir les produits</Link>
       </div>
     );

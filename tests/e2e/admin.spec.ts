@@ -14,7 +14,7 @@ test("connexion admin refusée avec un mauvais mot de passe", async ({ page }) =
 test("création d'un produit avec photo", async ({ page }) => {
   await loginAdmin(page);
   await page.getByRole("link", { name: "+ Ajouter un produit" }).click();
-  await page.getByLabel("Photos (jusqu'à 6)").setInputFiles(path.join(__dirname, "../../public/demo/miel-acacia.webp"));
+  await page.getByLabel("Photos (jusqu'à 6)").setInputFiles(path.join(__dirname, "../../public/embleme.png"));
   await page.getByLabel("Nom *").fill("Miel de karité test");
   await page.getByLabel("Prix (FCFA) *").fill("4500");
   await page.getByLabel("Stock *").fill("7");

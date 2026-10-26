@@ -10,39 +10,27 @@ const categories = [
 ];
 
 type V = { label: string; attrs: Record<string, string>; price: number; compareAt?: number; stock: number };
-type P = { slug: string; name: string; cat: string; img: string; featured?: boolean; desc: string; variants: V[] };
+type P = { slug: string; name: string; cat: string; featured?: boolean; usage?: "COSMETIQUE"; variants: V[] };
 
 const w = (label: string, price: number, stock: number, compareAt?: number): V => ({ label, attrs: { Poids: label }, price, stock, compareAt });
 const vol = (label: string, price: number, stock: number, compareAt?: number): V => ({ label, attrs: { Contenance: label }, price, stock, compareAt });
 
 const products: P[] = [
-  { slug: "beurre-de-karite-brut", name: "Beurre de karité brut", cat: "beurre-de-karite", img: "karite-brut", featured: true,
-    desc: "Beurre de karité **100 % naturel**, extrait artisanalement dans le nord de la Côte d'Ivoire.\n\nIdéal pour la peau, les cheveux et la cuisine.",
+  { slug: "beurre-de-karite-brut", name: "Beurre de karité brut", cat: "beurre-de-karite", featured: true,
     variants: [w("250 g", 2500, 40), w("500 g", 4500, 25), w("1 kg", 8000, 10, 9000)] },
-  { slug: "beurre-de-karite-parfume", name: "Beurre de karité parfumé", cat: "beurre-de-karite", img: "karite-parfume",
-    desc: "Karité fouetté, parfumé aux huiles essentielles.",
+  { slug: "beurre-de-karite-parfume", name: "Beurre de karité parfumé", cat: "beurre-de-karite",
     variants: [{ label: "200 g / Vanille", attrs: { Poids: "200 g", Parfum: "Vanille" }, price: 3500, stock: 15 },
       { label: "200 g / Coco", attrs: { Poids: "200 g", Parfum: "Coco" }, price: 3500, stock: 12 }] },
-  { slug: "savon-au-karite", name: "Savon au karité", cat: "beurre-de-karite", img: "karite-savon",
-    desc: "Savon artisanal saponifié à froid, enrichi en karité.", variants: [w("1 pain (100 g)", 1000, 60), w("Lot de 5", 4500, 20, 5000)] },
-  { slug: "baume-karite-levres", name: "Baume karité pour les lèvres", cat: "beurre-de-karite", img: "karite-baume",
-    desc: "Petit pot de baume nourrissant.", variants: [w("15 g", 1500, 3)] },
-  { slug: "miel-de-foret", name: "Miel de forêt", cat: "miel", img: "miel-foret", featured: true,
-    desc: "Miel sauvage récolté en forêt, goût intense.", variants: [vol("250 g", 3000, 30), vol("500 g", 5500, 20), vol("1 kg", 10000, 8, 11000)] },
-  { slug: "miel-d-acacia", name: "Miel d'acacia", cat: "miel", img: "miel-acacia",
-    desc: "Miel doux et clair.", variants: [vol("500 g", 6000, 18)] },
-  { slug: "miel-en-rayon", name: "Miel en rayon", cat: "miel", img: "miel-rayon",
-    desc: "Rayon de cire garni de miel, à déguster tel quel.", variants: [vol("300 g", 7000, 4)] },
-  { slug: "miel-au-gingembre", name: "Miel au gingembre", cat: "miel", img: "miel-gingembre", featured: true,
-    desc: "Miel infusé au gingembre frais.", variants: [vol("250 g", 3500, 22, 4000)] },
-  { slug: "poudre-de-mais", name: "Poudre de maïs", cat: "cereales-et-farines", img: "mais-poudre", featured: true,
-    desc: "Farine de maïs moulue finement, pour bouillies et pâtes.", variants: [w("1 kg", 1000, 80), w("5 kg", 4500, 30), w("25 kg", 20000, 6)] },
-  { slug: "grains-de-mil", name: "Grains de mil", cat: "cereales-et-farines", img: "mil-grains",
-    desc: "Mil décortiqué et trié.", variants: [w("1 kg", 1200, 50), w("5 kg", 5500, 15)] },
-  { slug: "farine-de-mil", name: "Farine de mil", cat: "cereales-et-farines", img: "mil-farine",
-    desc: "Farine de mil pour bouillie (koko).", variants: [w("1 kg", 1500, 40), w("5 kg", 7000, 2, 7500)] },
-  { slug: "mais-en-grains", name: "Maïs en grains", cat: "cereales-et-farines", img: "mais-grains",
-    desc: "Maïs jaune séché.", variants: [w("5 kg", 3500, 25), w("25 kg", 15000, 5)] },
+  { slug: "savon-au-karite", name: "Savon au karité", cat: "beurre-de-karite", usage: "COSMETIQUE", variants: [w("1 pain (100 g)", 1000, 60), w("Lot de 5", 4500, 20, 5000)] },
+  { slug: "baume-karite-levres", name: "Baume karité pour les lèvres", cat: "beurre-de-karite", usage: "COSMETIQUE", variants: [w("15 g", 1500, 3)] },
+  { slug: "miel-de-foret", name: "Miel de forêt", cat: "miel", featured: true, variants: [vol("250 g", 3000, 30), vol("500 g", 5500, 20), vol("1 kg", 10000, 8, 11000)] },
+  { slug: "miel-d-acacia", name: "Miel d'acacia", cat: "miel", variants: [vol("500 g", 6000, 18)] },
+  { slug: "miel-en-rayon", name: "Miel en rayon", cat: "miel", variants: [vol("300 g", 7000, 4)] },
+  { slug: "miel-au-gingembre", name: "Miel au gingembre", cat: "miel", featured: true, variants: [vol("250 g", 3500, 22, 4000)] },
+  { slug: "poudre-de-mais", name: "Poudre de maïs", cat: "cereales-et-farines", featured: true, variants: [w("1 kg", 1000, 80), w("5 kg", 4500, 30), w("25 kg", 20000, 6)] },
+  { slug: "grains-de-mil", name: "Grains de mil", cat: "cereales-et-farines", variants: [w("1 kg", 1200, 50), w("5 kg", 5500, 15)] },
+  { slug: "farine-de-mil", name: "Farine de mil", cat: "cereales-et-farines", variants: [w("1 kg", 1500, 40), w("5 kg", 7000, 2, 7500)] },
+  { slug: "mais-en-grains", name: "Maïs en grains", cat: "cereales-et-farines", variants: [w("5 kg", 3500, 25), w("25 kg", 15000, 5)] },
 ];
 
 const zones = ["Abobo", "Adjamé", "Attécoubé", "Cocody", "Koumassi", "Marcory", "Plateau", "Port-Bouët", "Treichville", "Yopougon", "Bingerville", "Anyama", "Songon"];
@@ -61,8 +49,8 @@ async function main() {
     if (await prisma.product.findUnique({ where: { slug: p.slug } })) continue;
     await prisma.product.create({
       data: {
-        slug: p.slug, name: p.name, description: p.desc, categoryId: catIds[p.cat], isFeatured: !!p.featured,
-        images: { create: [{ url: `/demo/${p.img}.webp`, alt: p.name, width: 800, height: 800 }] },
+        // Produits de démonstration : pas de description ni de photo (à fournir par la boutique), usage non affirmé
+        slug: p.slug, name: p.name, categoryId: catIds[p.cat], isFeatured: !!p.featured, usage: p.usage ?? null,
         variants: {
           create: p.variants.map((v, i) => ({
             sku: `${p.slug}-${i + 1}`.toUpperCase(), label: v.label, attributes: v.attrs, price: v.price,

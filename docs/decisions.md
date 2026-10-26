@@ -52,3 +52,12 @@ Choix faits faute de précision dans la spec (§11 : « fais le choix le plus si
 - RLS activée sans politique sur toutes les tables (refus par défaut pour `anon`/`authenticated` sur Supabase). L'application utilise le rôle propriétaire, non soumis à la RLS.
 - Pool de connexions obligatoire en serverless (voir `.env.example`). Les transactions n'incluent aucun appel HTTP (CinetPay est appelé hors transaction) ; les verrous de variantes sont pris dans l'ordre des identifiants (pas d'interblocage).
 - Non retenu pour l'instant : clés primaires `bigint identity`/UUIDv7 au lieu de `cuid` (les cuid sont déjà ordonnés dans le temps ; migration coûteuse) ; index GIN pour la recherche (`unaccent` n'est pas IMMUTABLE, il faudrait une fonction enveloppe : inutile tant que le catalogue compte moins de quelques milliers de produits) ; montants en `integer` plutôt que `numeric`, car le FCFA n'a pas de décimales.
+
+## Refonte Noh's Shop (frontend-design, web-design-guidelines, webapp-testing, seo-audit)
+- **Photos** : aucune vraie photo produit n'est disponible. Les visuels générés de démonstration ont été retirés (migration `remove_demo_images`) : les cartes affichent un emplacement neutre « Photo à venir » au format carré.
+- **Informations produit** : nouveaux champs `usage` (alimentaire / cosmétique / les deux), `ingredients`, `storage`, `origin` et `netWeight` (par format). Vides = non confirmés : la fiche n'affiche rien d'inventé et l'usage reste « À préciser par la boutique ». Seuls le savon et le baume de démonstration sont marqués « cosmétique ».
+- **Descriptions de démonstration** : retirées (elles contenaient des affirmations non confirmées, ex. karité « pour la cuisine »).
+- **Promotions** : uniquement les produits dont une variante a un prix barré supérieur au prix ; la carte affiche alors cette variante remisée. Les sections de l'accueil ne répètent jamais un produit. « Meilleures ventes » devient « Nos incontournables » tant qu'il n'y a pas de ventes.
+- **WhatsApp** : numéro par défaut unique dans `src/config/shop.ts` (+225 01 01 11 40 70, confirmé par la boutique), modifiable dans Admin → Réglages. Le lien produit du message est construit avec le domaine utilisé par le visiteur.
+- **Frise de motifs retirée** : décorative, sans rapport avec les produits.
+- **Bouton WhatsApp flottant** masqué sur la fiche produit, le panier et la commande (il masquait des prix ; ces pages ont leur propre bouton).

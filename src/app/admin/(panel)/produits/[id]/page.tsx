@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ActionForm } from "@/components/admin/ActionForm";
+import { ProductInfoFields } from "@/components/admin/ProductInfoFields";
 import { prisma } from "@/lib/db";
 import { duplicateProduct, imageAction, saveVariant, toggleProduct, updateProduct, uploadImages } from "../actions";
 
@@ -69,6 +70,7 @@ export default async function EditProduct({ params, searchParams }: { params: Pr
           </div>
           <div><label htmlFor="description" className="label">Description (Markdown)</label><textarea id="description" name="description" rows={6} defaultValue={product.description} className="input" /></div>
           <div><label htmlFor="leadTimeNote" className="label">Délai de livraison indicatif (facultatif)</label><input id="leadTimeNote" name="leadTimeNote" defaultValue={product.leadTimeNote ?? ""} className="input" /></div>
+          <ProductInfoFields usage={product.usage} ingredients={product.ingredients} storage={product.storage} origin={product.origin} />
           <label className="flex min-h-11 items-center gap-2"><input type="checkbox" name="isActive" defaultChecked={product.isActive} className="h-5 w-5" /> Visible sur le site</label>
           <label className="flex min-h-11 items-center gap-2"><input type="checkbox" name="isFeatured" defaultChecked={product.isFeatured} className="h-5 w-5" /> Mis en avant</label>
         </ActionForm>
@@ -87,6 +89,7 @@ export default async function EditProduct({ params, searchParams }: { params: Pr
               <div><label className="label" htmlFor={`p-${v?.id}`}>Prix</label><input id={`p-${v?.id}`} name="price" type="number" inputMode="numeric" min={0} defaultValue={v?.price} required className="input" /></div>
               <div><label className="label" htmlFor={`s-${v?.id}`}>Stock</label><input id={`s-${v?.id}`} name="stock" type="number" inputMode="numeric" min={0} defaultValue={v?.stock ?? 0} required className="input" /></div>
               <div><label className="label" htmlFor={`c-${v?.id}`}>Prix barré</label><input id={`c-${v?.id}`} name="compareAtPrice" type="number" inputMode="numeric" min={0} defaultValue={v?.compareAtPrice ?? ""} className="input" /></div>
+              <div className="col-span-2"><label className="label" htmlFor={`w-${v?.id}`}>Poids ou contenance nets (facultatif)</label><input id={`w-${v?.id}`} name="netWeight" defaultValue={v?.netWeight ?? ""} placeholder="Ex. 250 g net…" className="input" /></div>
               <div><label className="label" htmlFor={`k-${v?.id}`}>Réf. (SKU)</label><input id={`k-${v?.id}`} name="sku" defaultValue={v?.sku} className="input" /></div>
               <div className="col-span-2"><label className="label" htmlFor={`a-${v?.id}`}>Attributs</label><input id={`a-${v?.id}`} name="attributes" defaultValue={attrsToText(v?.attributes)} className="input" /></div>
               {v ? <label className="col-span-2 flex min-h-11 items-center gap-2"><input type="checkbox" name="isActive" defaultChecked={v.isActive} className="h-5 w-5" /> Active</label> : null}

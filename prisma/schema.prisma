@@ -35,10 +35,22 @@ model Product {
   isFeatured   Boolean          @default(false)
   // Délai de livraison indicatif propre au produit (sinon celui de la zone)
   leadTimeNote String?
+  // Informations produit : laissées vides tant qu'elles ne sont pas confirmées (rien n'est inventé)
+  usage        ProductUsage?
+  ingredients  String?
+  storage      String?
+  origin       String?
   createdAt    DateTime         @default(now()) @db.Timestamptz(3)
   updatedAt    DateTime         @updatedAt @db.Timestamptz(3)
 
   @@index([categoryId])
+}
+
+/// Usage du produit. Vide (null) = non confirmé : le site n'affirme alors rien.
+enum ProductUsage {
+  ALIMENTAIRE
+  COSMETIQUE
+  ALIMENTAIRE_ET_COSMETIQUE
 }
 
 model ProductImage {
@@ -63,6 +75,8 @@ model ProductVariant {
   attributes     Json        @default("{}")
   price          Int
   compareAtPrice Int?
+  // Poids ou contenance nets confirmés (ex. « 250 g net »), facultatif
+  netWeight      String?
   stock          Int         @default(0)
   isActive       Boolean     @default(true)
   position       Int         @default(0)

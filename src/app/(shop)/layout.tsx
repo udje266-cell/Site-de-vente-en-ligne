@@ -3,7 +3,6 @@ import Link from "next/link";
 import { CartBadge } from "@/components/cart/CartBadge";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { SearchBox } from "@/components/SearchBox";
-import { KorhogoBand } from "@/components/KorhogoBand";
 import { FloatingWhatsApp } from "@/components/WhatsAppButton";
 import { shopConfig } from "@/config/shop";
 import { getCategories } from "@/lib/catalog";
@@ -31,7 +30,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
             <span className="flex h-10 w-10 items-center justify-center rounded-md bg-white">
               <Image src={shopConfig.logo} alt="" width={34} height={34} priority />
             </span>
-            <span className="display hidden text-xl sm:inline">{settings.shopName}</span>
+            <span translate="no" className="display hidden text-xl sm:inline">{settings.shopName}</span>
             <span className="sr-only sm:hidden">{settings.shopName} – accueil</span>
           </Link>
           <div className="flex-1">
@@ -41,6 +40,11 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
         </div>
         <nav aria-label="Catégories" className="border-t border-white/15">
           <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-3 text-[0.95rem]">
+            <li>
+              <Link href="/produits" className="flex min-h-11 items-center whitespace-nowrap px-2 font-bold hover:underline">
+                Tous les produits
+              </Link>
+            </li>
             {categories.map((c) => (
               <li key={c.id}>
                 <Link href={`/categories/${c.slug}`} className="flex min-h-11 items-center whitespace-nowrap px-2 hover:underline">
@@ -60,7 +64,6 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
         {children}
       </main>
       <footer className="mt-16 bg-brand text-white/85">
-        <KorhogoBand className="block" color="#e59900" />
         <div className="mx-auto grid max-w-6xl gap-6 px-3 py-8 text-sm sm:grid-cols-3">
           <div>
             <div className="max-w-sm rounded-md bg-white p-3">
@@ -77,7 +80,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
             <p className="mt-3">{shopConfig.city}, Côte d&apos;Ivoire</p>
           </div>
           <nav aria-label="Informations">
-            <ul className="space-y-1">
+            <ul>
               {[
                 ["a-propos", "À propos"],
                 ["livraison", "Livraison"],
@@ -88,7 +91,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
                 ["contact", "Contact"],
               ].map(([slug, label]) => (
                 <li key={slug}>
-                  <Link href={`/infos/${slug}`} className="inline-block py-1 hover:underline">
+                  <Link href={`/infos/${slug}`} className="inline-flex min-h-11 items-center hover:underline">
                     {label}
                   </Link>
                 </li>
@@ -99,12 +102,12 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
             <p className="font-bold text-white">Nous contacter</p>
             <ul className="mt-1">
               <li>
-                <a href={`tel:${settings.whatsapp}`} className="inline-block py-2 hover:underline">
+                <a href={`tel:${settings.whatsapp}`} className="inline-flex min-h-11 items-center hover:underline">
                   Appeler le {formatPhone(settings.whatsapp)}
                 </a>
               </li>
               <li>
-                <a href={waLink(settings.whatsapp)} rel="noopener noreferrer" target="_blank" className="inline-block py-2 hover:underline">
+                <a href={waLink(settings.whatsapp)} rel="noopener noreferrer" target="_blank" className="inline-flex min-h-11 items-center hover:underline">
                   Écrire sur WhatsApp
                 </a>
               </li>
@@ -115,7 +118,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
                 <ul className="mt-1 flex gap-4">
                   {socialLinks.map(([label, href]) => (
                     <li key={label}>
-                      <a href={href} rel="noopener noreferrer" target="_blank" className="inline-block py-2 hover:underline">{label}</a>
+                      <a href={href} rel="noopener noreferrer" target="_blank" className="inline-flex min-h-11 items-center hover:underline">{label}</a>
                     </li>
                   ))}
                 </ul>

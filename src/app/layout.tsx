@@ -10,7 +10,8 @@ import { appUrl } from "@/lib/app-url";
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl()),
   title: { default: shopConfig.name, template: `%s | ${shopConfig.name}` },
-  description: shopConfig.tagline,
+  description:
+    "Noh's Shop, alimentaire et divers à Abidjan : miel de Korhogo, beurre de karité, maïs et mil. Livraison à domicile, paiement à la livraison.",
   openGraph: { type: "website", locale: "fr_CI", siteName: shopConfig.name },
 };
 

@@ -14,7 +14,11 @@ async function getCategory(slug: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const c = await getCategory((await params).slug);
   if (!c) return {};
-  return { title: c.name, description: `${c.name} : découvrez nos produits, livraison à Abidjan.`, alternates: { canonical: `/categories/${c.slug}` } };
+  return {
+    title: `${c.name} à Abidjan : prix et formats`,
+    description: `${c.name} chez Noh's Shop : tous les formats et les prix, livraison à Abidjan et paiement à la livraison. Commande en ligne ou sur WhatsApp.`,
+    alternates: { canonical: `/categories/${c.slug}` },
+  };
 }
 
 export default async function CategoryPage({ params, searchParams }: Props) {
@@ -28,9 +32,9 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const products = filterAndSort(all, filters);
   return (
     <div>
-      <h1 className="mb-3 text-2xl font-bold">{category.name}</h1>
+      <h1 className="mb-3 text-3xl text-balance">{category.name}</h1>
       <CatalogFilters action={`/categories/${category.slug}`} attributes={collectAttributes(all)} current={filters} />
-      <p className="mb-2 text-sm text-stone-600">{products.length} produit(s)</p>
+      <p className="mb-3 text-sm text-stone-700">{products.length} produit{products.length > 1 ? "s" : ""}</p>
       <ProductGrid products={products} priorityCount={2} />
     </div>
   );

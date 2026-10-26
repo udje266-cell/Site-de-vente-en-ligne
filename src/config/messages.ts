@@ -1,4 +1,4 @@
-import type { OrderStatus, PaymentMethod, PaymentStatus } from "@prisma/client";
+import type { OrderStatus, PaymentMethod, PaymentStatus, ProductUsage } from "@prisma/client";
 
 /** Textes affichés, centralisés pour être facilement modifiables. */
 export const statusLabels: Record<OrderStatus, string> = {
@@ -41,4 +41,11 @@ export const t = {
   contactWhatsapp: "Écrire sur WhatsApp",
   errorTitle: "Oups, une erreur est survenue",
   errorBody: "Réessayez dans un instant ou contactez-nous sur WhatsApp.",
+};
+
+/** Usage affiché sur la fiche produit. Absent (null) = non confirmé : rien n'est affirmé. */
+export const usageLabels: Record<ProductUsage, { label: string; detail: string }> = {
+  ALIMENTAIRE: { label: "Usage alimentaire", detail: "Produit destiné à la consommation." },
+  COSMETIQUE: { label: "Usage cosmétique", detail: "Pour la peau ou les cheveux. Ne pas consommer." },
+  ALIMENTAIRE_ET_COSMETIQUE: { label: "Usage alimentaire et cosmétique", detail: "Se consomme et s'utilise aussi sur la peau ou les cheveux." },
 };
