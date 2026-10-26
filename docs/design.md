@@ -1,16 +1,19 @@
 # Identité visuelle
 
-Sujet : produits du terroir du nord ivoirien (karité, miel, mil, maïs), vendus à Abidjan, consultés surtout sur des téléphones Android d'entrée de gamme.
+Boutique : **Noh's Shop – Alimentaire et divers**. Sujet : produits du terroir du nord ivoirien (karité, miel, mil, maïs), vendus à Abidjan, consultés surtout sur des téléphones Android d'entrée de gamme.
+
+Couleurs tirées du logo Noh's Shop (vert des feuilles, or de la goutte de karité et de l'épi).
 
 | Jeton | Valeur | Rôle |
 | --- | --- | --- |
-| Indigo Korhogo (`brand`) | `#1E2B4A` | En-tête, hero, pied de page, structure |
-| Miel (`accent`) | `#F2A900` | Boutons d'action, frise, promo |
+| Vert (`brand`) | `#014322` | En-tête, hero, pied de page, structure |
+| Or (`accent`) | `#E59900` | Boutons d'action, frise, promo |
 | Karité (`karite`) | `#F4F0E2` | Fond des images, bloc catégorie karité |
 | Mil (`mil`) | `#EDE3C8` | Bloc catégorie céréales |
 | Néré (`nere`) | `#2E6B4E` | Couleur de réserve pour une 4ᵉ catégorie |
-| Encre (`ink`) | `#141B2D` | Texte |
+| Encre (`ink`) | `#13201A` | Texte |
 
+- **Logo** : sur fond vert, l'emblème est posé sur une pastille blanche (en-tête) et le logo complet sur un bloc blanc (pied de page), car le vert du logo disparaîtrait sur le vert du site.
 - **Typographie** : Archivo en largeur étroite (75 %), graisse 800, pour les titres et les prix (esprit enseigne peinte de marché) ; Atkinson Hyperlegible pour le texte (lisibilité sur petits écrans). Polices auto-hébergées (`@fontsource`).
 - **Élément signature** : la frise `KorhogoBand` (poisson, chevrons, oiseau, points de semis), inspirée des toiles peintes de Korhogo. Elle n'apparaît qu'en bas du hero et en haut du pied de page.
 - **Principes** : fond blanc, alignement à gauche, fiches produit sans bordure ni ombre, chaque catégorie dans la couleur de sa matière, aucune animation décorative.

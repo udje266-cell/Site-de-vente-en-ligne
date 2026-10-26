@@ -37,7 +37,7 @@ Les tests utilisent `TEST_DATABASE_URL` (par défaut `postgresql://shop:shop@loc
 
 - `src/config/shop.ts` : nom, slogan, logo, couleurs, WhatsApp, réseaux sociaux, adresse de retrait, valeurs par défaut des réglages. **Les valeurs `PLACEHOLDER` sont à remplacer.**
 - `src/app/globals.css` (bloc `@theme`) : couleurs utilisées par l'interface.
-- `public/logo.svg` : logo.
+- `public/logo.webp` (logo complet), `public/embleme.png` (emblème), `src/app/icon.png`, `src/app/apple-icon.png`, `src/app/opengraph-image.jpg` : logo et icônes.
 - `src/config/messages.ts` : libellés des statuts et textes principaux.
 - Depuis l'admin (Réglages) : nom affiché, WhatsApp, e-mail de notification, paiement à la livraison et son plafond, seuil de livraison gratuite, retrait sur place.
 

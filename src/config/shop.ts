@@ -5,13 +5,14 @@
  * sont stockés en base (table Setting) ; les valeurs ci-dessous servent de valeurs par défaut.
  */
 export const shopConfig = {
-  name: "Saveurs d'Abidjan", // PLACEHOLDER
-  tagline: "Karité, miel, maïs et mil, du terroir à votre porte", // PLACEHOLDER
-  logo: "/logo.svg", // PLACEHOLDER : remplacer public/logo.svg
+  name: "Noh's Shop",
+  tagline: "Alimentaire et divers",
+  logo: "/embleme.png", // emblème seul ; logo complet : /logo.webp
+  logoFull: "/logo.webp",
   colors: {
-    // PLACEHOLDER : couleurs principales (aussi définies dans src/app/globals.css)
-    primary: "#1e2b4a",
-    accent: "#f2a900",
+    // Couleurs du logo (aussi définies dans src/app/globals.css)
+    primary: "#014322",
+    accent: "#e59900",
   },
   whatsapp: "+2250700000000", // PLACEHOLDER (format +225XXXXXXXXXX)
   email: "contact@example.com", // PLACEHOLDER

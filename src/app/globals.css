@@ -1,19 +1,18 @@
 @import "tailwindcss";
 
 /*
- * Identité visuelle (voir docs/design.md).
- * Indigo des toiles de Korhogo pour la structure, miel pour les actions.
- * Les couleurs définitives de la boutique remplaceront ces valeurs.
+ * Identité visuelle (voir docs/design.md) : couleurs du logo Noh's Shop.
+ * Vert feuille pour la structure, or (goutte de karité, épi) pour les actions.
  */
 @theme {
-  --color-brand: #1e2b4a; /* indigo Korhogo */
-  --color-brand-dark: #141d33;
-  --color-accent: #f2a900; /* miel */
-  --color-accent-dark: #d99600;
+  --color-brand: #014322; /* vert du logo */
+  --color-brand-dark: #002e17;
+  --color-accent: #e59900; /* or du logo */
+  --color-accent-dark: #c98400;
   --color-mil: #ede3c8;
   --color-karite: #f4f0e2;
   --color-nere: #2e6b4e;
-  --color-ink: #141b2d;
+  --color-ink: #13201a;
   --font-sans: "Atkinson Hyperlegible", system-ui, sans-serif;
   --font-display: "Archivo Variable", "Arial Narrow", system-ui, sans-serif;
 }

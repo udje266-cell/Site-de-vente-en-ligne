@@ -19,7 +19,9 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
       <header className="sticky top-0 z-30 bg-brand text-white">
         <div className="mx-auto flex max-w-6xl items-center gap-2 px-3 py-2">
           <Link href="/" className="flex min-h-11 shrink-0 items-center gap-2 font-bold">
-            <Image src={shopConfig.logo} alt="" width={36} height={36} priority />
+            <span className="flex h-10 w-10 items-center justify-center rounded-md bg-white">
+              <Image src={shopConfig.logo} alt="" width={34} height={34} priority />
+            </span>
             <span className="display hidden text-xl sm:inline">{settings.shopName}</span>
             <span className="sr-only sm:hidden">{settings.shopName} – accueil</span>
           </Link>
@@ -49,11 +51,13 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
         {children}
       </main>
       <footer className="mt-16 bg-brand text-white/85">
-        <KorhogoBand className="block" color="#f2a900" />
+        <KorhogoBand className="block" color="#e59900" />
         <div className="mx-auto grid max-w-6xl gap-6 px-3 py-8 text-sm sm:grid-cols-3">
           <div>
-            <p className="display text-2xl text-white">{settings.shopName}</p>
-            <p className="mt-1">{shopConfig.tagline}</p>
+            <div className="w-40 rounded-md bg-white p-2">
+              <Image src={shopConfig.logoFull} alt={settings.shopName} width={640} height={574} sizes="160px" className="h-auto w-full" />
+            </div>
+            
             <p className="mt-1">{shopConfig.city}, Côte d&apos;Ivoire</p>
           </div>
           <nav aria-label="Informations">

@@ -12,7 +12,6 @@ export const metadata: Metadata = {
   title: { default: shopConfig.name, template: `%s | ${shopConfig.name}` },
   description: shopConfig.tagline,
   openGraph: { type: "website", locale: "fr_CI", siteName: shopConfig.name },
-  icons: { icon: shopConfig.logo },
 };
 
 export const viewport: Viewport = { themeColor: shopConfig.colors.primary, width: "device-width", initialScale: 1 };
