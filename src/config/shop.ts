@@ -14,7 +14,7 @@ export const shopConfig = {
     primary: "#014322",
     accent: "#e59900",
   },
-  whatsapp: "+2250700000000", // PLACEHOLDER (format +225XXXXXXXXXX)
+  whatsapp: "+2250101114070", // format +225XXXXXXXXXX
   email: "contact@example.com", // PLACEHOLDER
   city: "Abidjan",
   country: "CI",
@@ -25,10 +25,11 @@ export const shopConfig = {
     enabled: true,
     address: "Cocody, Abidjan (adresse exacte communiquée par WhatsApp)", // PLACEHOLDER
   },
+  /** Réseaux sociaux : laisser vide ("") pour ne pas afficher le lien. */
   social: {
-    facebook: "https://facebook.com/", // PLACEHOLDER
-    instagram: "https://instagram.com/", // PLACEHOLDER
-    tiktok: "https://tiktok.com/", // PLACEHOLDER
+    facebook: "",
+    instagram: "",
+    tiktok: "",
   },
   defaults: {
     codEnabled: true,

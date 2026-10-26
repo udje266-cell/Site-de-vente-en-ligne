@@ -4,7 +4,7 @@ Choix faits faute de précision dans la spec (§11 : « fais le choix le plus si
 
 ## Produits et contenus
 - **Type de produits** : alimentation (beurre de karité, miel, poudre de maïs, grains de mil). Le seed crée 3 catégories : *Beurre de karité*, *Miel*, *Céréales & farines*, et 12 produits avec des variantes de poids/contenance.
-- **Nom et logo** : Noh's Shop, « Alimentaire et divers ». Logo complet `public/logo.webp`, emblème seul `public/embleme.png`, icônes `src/app/icon.png` / `apple-icon.png`, image de partage `src/app/opengraph-image.jpg`. Couleurs du logo dans `src/app/globals.css` (bloc `@theme`). **WhatsApp et réseaux sociaux** : encore des placeholders dans `src/config/shop.ts`. Le nom affiché et le WhatsApp sont aussi modifiables depuis Admin → Réglages (ces valeurs priment).
+- **Nom et logo** : Noh's Shop, « Alimentaire et divers ». Logo complet `public/logo.webp`, emblème seul `public/embleme.png`, icônes `src/app/icon.png` / `apple-icon.png`, image de partage `src/app/opengraph-image.jpg`. Couleurs du logo dans `src/app/globals.css` (bloc `@theme`). **WhatsApp** : +225 01 01 11 40 70. **Réseaux sociaux** : aucun pour l'instant (liens vides dans `src/config/shop.ts`, la section « Suivez-nous » réapparaît dès qu'un lien est renseigné). Le nom affiché et le WhatsApp sont aussi modifiables depuis Admin → Réglages (ces valeurs priment).
 - **Photos de démo** : visuels générés (`prisma/demo-images.mjs`) dans `public/demo/`.
 
 ## Stack

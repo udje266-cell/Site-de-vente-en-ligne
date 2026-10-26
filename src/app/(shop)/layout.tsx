@@ -7,10 +7,19 @@ import { KorhogoBand } from "@/components/KorhogoBand";
 import { FloatingWhatsApp } from "@/components/WhatsAppButton";
 import { shopConfig } from "@/config/shop";
 import { getCategories } from "@/lib/catalog";
+import { formatPhone } from "@/lib/format";
 import { getSettings } from "@/lib/settings";
+import { waLink } from "@/lib/whatsapp";
 
 export default async function ShopLayout({ children }: { children: React.ReactNode }) {
   const [settings, categories] = await Promise.all([getSettings(), getCategories()]);
+  const socialLinks = (
+    [
+      ["Facebook", shopConfig.social.facebook],
+      ["Instagram", shopConfig.social.instagram],
+      ["TikTok", shopConfig.social.tiktok],
+    ] as const
+  ).filter(([, href]) => href);
   return (
     <CartProvider>
       <a href="#contenu" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:bg-white focus:p-2">
@@ -87,12 +96,31 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
             </ul>
           </nav>
           <div>
-            <p className="font-bold text-white">Suivez-nous</p>
-            <ul className="mt-1 flex gap-4">
-              <li><a href={shopConfig.social.facebook} rel="noopener noreferrer" target="_blank" className="inline-block py-2 hover:underline">Facebook</a></li>
-              <li><a href={shopConfig.social.instagram} rel="noopener noreferrer" target="_blank" className="inline-block py-2 hover:underline">Instagram</a></li>
-              <li><a href={shopConfig.social.tiktok} rel="noopener noreferrer" target="_blank" className="inline-block py-2 hover:underline">TikTok</a></li>
+            <p className="font-bold text-white">Nous contacter</p>
+            <ul className="mt-1">
+              <li>
+                <a href={`tel:${settings.whatsapp}`} className="inline-block py-2 hover:underline">
+                  Appeler le {formatPhone(settings.whatsapp)}
+                </a>
+              </li>
+              <li>
+                <a href={waLink(settings.whatsapp)} rel="noopener noreferrer" target="_blank" className="inline-block py-2 hover:underline">
+                  Écrire sur WhatsApp
+                </a>
+              </li>
             </ul>
+            {socialLinks.length > 0 ? (
+              <>
+                <p className="mt-4 font-bold text-white">Suivez-nous</p>
+                <ul className="mt-1 flex gap-4">
+                  {socialLinks.map(([label, href]) => (
+                    <li key={label}>
+                      <a href={href} rel="noopener noreferrer" target="_blank" className="inline-block py-2 hover:underline">{label}</a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
           </div>
         </div>
       </footer>
