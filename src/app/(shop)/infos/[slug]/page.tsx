@@ -5,6 +5,11 @@ import { renderMarkdown } from "@/lib/markdown";
 
 export const revalidate = 3600;
 
+/** Pages générées à la première visite puis mises en cache (ISR). */
+export async function generateStaticParams() {
+  return [];
+}
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

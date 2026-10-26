@@ -11,6 +11,11 @@ import { getSettings } from "@/lib/settings";
 
 export const revalidate = 300;
 
+/** Pages générées à la première visite puis mises en cache (ISR). */
+export async function generateStaticParams() {
+  return [];
+}
+
 type Props = { params: Promise<{ slug: string }> };
 
 const getProduct = cache((slug: string) =>
