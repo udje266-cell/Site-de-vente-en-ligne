@@ -4,6 +4,7 @@ import { ProductGrid } from "@/components/ProductCard";
 import { t } from "@/config/messages";
 import { prisma } from "@/lib/db";
 import { getBestSellers, getNewArrivals, getPromotions } from "@/lib/catalog";
+import { onlinePaymentAvailable } from "@/lib/payments";
 
 export const revalidate = 300;
 
@@ -11,6 +12,7 @@ export const revalidate = 300;
 const materialColors = ["bg-karite text-ink", "bg-accent text-ink", "bg-mil text-ink", "bg-nere text-white"];
 
 export default async function HomePage() {
+  const onlineEnabled = onlinePaymentAvailable();
   const [news, best, promos, categories] = await Promise.all([
     getNewArrivals(8),
     getBestSellers(4),
@@ -24,9 +26,10 @@ export default async function HomePage() {
   return (
     <div className="space-y-12">
       <section aria-labelledby="h-hero" className="-mx-4 -mt-6 bg-brand px-4 pb-0 pt-8 text-white sm:mx-0 sm:rounded-b-md">
-        <h1 id="h-hero" className="max-w-[16ch] text-[2.6rem] sm:text-6xl">Karité, miel, mil et maïs du Nord, livrés à Abidjan</h1>
+        <h1 id="h-hero" className="max-w-[17ch] text-[2.6rem] sm:text-6xl">Miel de Korhogo, karité et céréales du Nord, livrés à Abidjan</h1>
         <p className="mt-4 max-w-[46ch] text-white/85">
-          Payez à la livraison ou par Mobile Money. Une question ? Écrivez-nous sur WhatsApp, on répond vite.
+          {onlineEnabled ? "Payez à la livraison ou par Mobile Money." : "Vous payez à la livraison."} Une question ? Écrivez-nous sur
+          WhatsApp, on répond vite.
         </p>
         <KorhogoBand className="anim-reveal mt-8 block" color="#e59900" />
       </section>
