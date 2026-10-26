@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/db";
-import { createOrder } from "@/lib/orders/create";
+import { createOrder, createOrderOnce } from "@/lib/orders/create";
 import { OrderError } from "@/lib/orders/errors";
 import { checkoutSchema } from "@/lib/orders/schema";
 import { transitionOrder } from "@/lib/orders/transition";
@@ -77,5 +77,46 @@ describe("création de commande", () => {
   it("valide le téléphone ivoirien", () => {
     const r = checkoutSchema.safeParse({ items: [{ variantId: "x", quantity: 1 }], ...customer, customerPhone: "12345", deliveryZoneId: "z", paymentMethod: "COD" });
     expect(r.success).toBe(false);
+  });
+});
+
+describe("anti-doublon (clé d'idempotence)", () => {
+  it("même clé : une seule commande, stock décrémenté une fois", async () => {
+    const { variant, zone } = await fixture(5);
+    const data = checkoutSchema.parse({
+      items: [{ variantId: variant.id, quantity: 2 }],
+      ...customer,
+      deliveryZoneId: zone.id,
+      paymentMethod: "COD",
+      idempotencyKey: "cle-de-test-0123456789",
+    });
+    const a = await createOrderOnce(data);
+    const b = await createOrderOnce(data);
+    expect(a.duplicate).toBe(false);
+    expect(b.duplicate).toBe(true);
+    expect(b.order.id).toBe(a.order.id);
+    expect(await prisma.order.count()).toBe(1);
+    expect((await prisma.productVariant.findUnique({ where: { id: variant.id } }))!.stock).toBe(3);
+  });
+
+  it("même clé envoyée en parallèle : une seule commande", async () => {
+    const { variant, zone } = await fixture(10);
+    const data = checkoutSchema.parse({
+      items: [{ variantId: variant.id, quantity: 1 }],
+      ...customer,
+      deliveryZoneId: zone.id,
+      paymentMethod: "COD",
+      idempotencyKey: "cle-parallele-0123456789",
+    });
+    const results = await Promise.all([1, 2, 3, 4, 5].map(() => createOrderOnce(data)));
+    expect(new Set(results.map((r) => r.order.id)).size).toBe(1);
+    expect(await prisma.order.count()).toBe(1);
+    expect((await prisma.productVariant.findUnique({ where: { id: variant.id } }))!.stock).toBe(9);
+  });
+
+  it("adresse : quartier et point de repère enregistrés", async () => {
+    const { variant, zone } = await fixture(5);
+    const order = await createOrder(checkoutSchema.parse({ items: [{ variantId: variant.id, quantity: 1 }], ...customer, deliveryZoneId: zone.id, paymentMethod: "COD" }));
+    expect(order.deliveryAddress).toBe("Quartier : Angré\nRepère : près de la pharmacie");
   });
 });

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CatalogFilters, parseFilters } from "@/components/CatalogFilters";
+import { CatalogFilters, hasActiveFilters, parseFilters, resetHref } from "@/components/CatalogFilters";
+import { EmptyResults } from "@/components/EmptyResults";
 import { ProductGrid } from "@/components/ProductCard";
 import { collectAttributes, filterAndSort, productCardInclude } from "@/lib/catalog";
 import { prisma } from "@/lib/db";
+import { getSettings } from "@/lib/settings";
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
 
@@ -35,7 +37,14 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       <h1 className="mb-3 text-3xl text-balance">{category.name}</h1>
       <CatalogFilters action={`/categories/${category.slug}`} attributes={collectAttributes(all)} current={filters} />
       <p className="mb-3 text-sm text-stone-700">{products.length} produit{products.length > 1 ? "s" : ""}</p>
-      <ProductGrid products={products} priorityCount={2} />
+      {products.length === 0 ? (
+        <EmptyResults
+          resetHref={hasActiveFilters(filters) ? resetHref(`/categories/${category.slug}`) : undefined}
+          whatsapp={(await getSettings()).whatsapp}
+        />
+      ) : (
+        <ProductGrid products={products} priorityCount={2} headingLevel={2} />
+      )}
     </div>
   );
 }

@@ -30,18 +30,28 @@ export const checkoutSchema = z
       .pipe(z.string().email("E-mail invalide.").optional()),
     pickup: z.boolean().default(false),
     deliveryZoneId: z.string().max(50).optional(),
-    deliveryAddress: z.string().trim().max(300).default(""),
+    // Quartier et point de repère, combinés en une adresse descriptive
+    deliveryDistrict: z.string().trim().max(120).default(""),
+    deliveryLandmark: z.string().trim().max(200).default(""),
     deliveryNote: z.string().trim().max(500).optional(),
     promoCode: z.string().trim().max(40).optional(),
-    paymentMethod: z.enum(["CINETPAY", "COD"]),
+    paymentMethod: z.enum(["CINETPAY", "COD"], { errorMap: () => ({ message: "Choisissez un moyen de paiement." }) }),
+    idempotencyKey: z.string().regex(/^[A-Za-z0-9-]{16,64}$/).optional(),
   })
   .superRefine((v, ctx) => {
     if (!v.pickup) {
       if (!v.deliveryZoneId) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["deliveryZoneId"], message: "Choisissez une zone de livraison." });
-      if (v.deliveryAddress.length < 5)
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["deliveryAddress"], message: "Indiquez le quartier et un point de repère." });
+      if (v.deliveryDistrict.length < 2)
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["deliveryDistrict"], message: "Indiquez votre quartier." });
+      if (v.deliveryLandmark.length < 3)
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["deliveryLandmark"], message: "Indiquez un point de repère (pharmacie, école, carrefour…)." });
     }
   });
 
 export type CheckoutInput = z.input<typeof checkoutSchema>;
 export type CheckoutData = z.output<typeof checkoutSchema>;
+
+/** Adresse descriptive enregistrée sur la commande. */
+export function formatDeliveryAddress(d: { deliveryDistrict: string; deliveryLandmark: string }): string {
+  return `Quartier : ${d.deliveryDistrict}\nRepère : ${d.deliveryLandmark}`;
+}

@@ -1,44 +1,47 @@
 import Link from "next/link";
-import { t } from "@/config/messages";
 import { priceInfo, type ProductCardData } from "@/lib/catalog";
-import { Price } from "./Price";
+import { CardBuy } from "./CardBuy";
 import { ProductImage } from "./ProductImage";
 
-export function ProductCard({ product, priority = false, promo = false }: { product: ProductCardData; priority?: boolean; promo?: boolean }) {
+export function ProductCard({ product, priority = false, promo = false, headingLevel = 3 }: { product: ProductCardData; priority?: boolean; promo?: boolean; headingLevel?: 2 | 3 }) {
   const info = priceInfo(product, { preferPromo: promo });
   const img = product.images[0];
+  const Heading = headingLevel === 2 ? "h2" : "h3";
+  const initial = product.variants.find((v) => v.label === info.label && v.price === info.price) ?? product.variants[0];
+  if (!initial) return null;
   return (
-    <Link href={`/produits/${product.slug}`} className="group flex h-full flex-col rounded-md focus-visible:outline-offset-4">
-      <div className="relative">
-        <ProductImage src={img?.url} alt={img?.alt || product.name} sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" priority={priority} />
-        {info.compareAt ? (
-          <span className="absolute left-0 top-3 rounded-r-md bg-accent px-2 py-1 text-sm font-bold text-ink">
-            −{Math.round((1 - info.price / info.compareAt) * 100)}&nbsp;%
-          </span>
-        ) : null}
-      </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5 pt-2">
-        <h3 className="line-clamp-2 break-words font-sans text-base font-normal leading-snug text-ink group-hover:underline">{product.name}</h3>
-        <Price price={info.price} compareAt={info.compareAt} from={info.multiple && !info.compareAt} />
-        <span className="text-sm text-stone-700">
-          {info.label}
-          {product.variants.length > 1 ? (
-            <span className="text-stone-600">, et {product.variants.length - 1} autre{product.variants.length > 2 ? "s" : ""} format{product.variants.length > 2 ? "s" : ""}</span>
+    <article className="flex h-full flex-col">
+      <Link href={`/produits/${product.slug}`} className="group block rounded-md focus-visible:outline-offset-4">
+        <div className="relative">
+          <ProductImage src={img?.url} alt={img?.alt || product.name} sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" priority={priority} />
+          {info.onSale ? (
+            <span className="absolute left-0 top-3 rounded-r-md bg-accent px-2 py-1 text-sm font-bold text-ink">
+              {info.compareAt ? `−${Math.round((1 - info.price / info.compareAt) * 100)} %` : "Promo"}
+            </span>
           ) : null}
-        </span>
-        {info.stock <= 0 ? <span className="text-sm font-bold text-red-700">{t.outOfStock}</span> : null}
-      </div>
-    </Link>
+        </div>
+        <Heading className="mt-2 line-clamp-2 min-h-[2.75rem] break-words font-sans text-base font-normal leading-snug text-ink group-hover:underline">
+          {product.name}
+        </Heading>
+      </Link>
+      <CardBuy
+        slug={product.slug}
+        name={product.name}
+        image={img?.url}
+        initialId={initial.id}
+        variants={product.variants.map((v) => ({ id: v.id, label: v.label, price: v.price, compareAtPrice: v.compareAtPrice, stock: v.stock }))}
+      />
+    </article>
   );
 }
 
-export function ProductGrid({ products, priorityCount = 0, promo = false }: { products: ProductCardData[]; priorityCount?: number; promo?: boolean }) {
-  if (products.length === 0) return <p className="text-stone-700">Aucun produit pour le moment.</p>;
+export function ProductGrid({ products, priorityCount = 0, promo = false, headingLevel = 3 }: { products: ProductCardData[]; priorityCount?: number; promo?: boolean; headingLevel?: 2 | 3 }) {
+  if (products.length === 0) return null;
   return (
-    <ul className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
+    <ul className="grid grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
       {products.map((p, i) => (
         <li key={p.id} className="min-w-0">
-          <ProductCard product={p} priority={i < priorityCount} promo={promo} />
+          <ProductCard product={p} priority={i < priorityCount} promo={promo} headingLevel={headingLevel} />
         </li>
       ))}
     </ul>

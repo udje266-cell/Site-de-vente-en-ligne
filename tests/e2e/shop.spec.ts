@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { addToCartAndCheckout, db, fillCustomer } from "./helpers";
+import { addToCartAndCheckout, db, fillCustomer, trackOrder } from "./helpers";
 
 test("parcours d'achat avec paiement à la livraison", async ({ page }) => {
   await addToCartAndCheckout(page);
@@ -7,15 +7,25 @@ test("parcours d'achat avec paiement à la livraison", async ({ page }) => {
   // 3 000 (250 g) + 1 500 livraison Cocody
   await expect(page.getByTestId("total")).toHaveText("4 500 FCFA");
   await page.getByRole("button", { name: "Confirmer la commande" }).click();
-  await expect(page.getByRole("heading", { name: "Merci pour votre commande !" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Merci, votre commande est enregistrée" })).toBeVisible();
   await expect(page.getByTestId("order-status")).toHaveText(/À confirmer/);
   const number = await page.getByTestId("order-number").innerText();
   expect(number).toMatch(/^CMD-\d{4}-\d{6}$/);
   await expect(page.getByTestId("cart-count")).toHaveCount(0);
 
-  // Suivi public
-  await page.goto(`/suivi?numero=${number}&tel=0701020304`);
+  // Suivi public : progression, données personnelles réduites, téléphone absent de l'URL
+  await trackOrder(page, number);
   await expect(page.getByTestId("order-number")).toHaveText(number);
+  await expect(page.getByRole("list", { name: "Progression de la commande" })).toBeVisible();
+  await expect(page.getByText("Awa, +225 07 •• •• •3 04")).toBeVisible();
+  await expect(page.getByText("Angré")).toHaveCount(0);
+  expect(page.url()).not.toContain("0701020304");
+  const wa = decodeURIComponent((await page.getByRole("link", { name: /Une question sur cette commande/ }).getAttribute("href"))!);
+  expect(wa).toContain(number);
+
+  // Mauvais téléphone : aucune information
+  await trackOrder(page, number, "0505050505");
+  await expect(page.getByText(/^Aucune commande ne correspond/)).toBeVisible();
 });
 
 test("un prix modifié dans le navigateur est ignoré", async ({ page }) => {

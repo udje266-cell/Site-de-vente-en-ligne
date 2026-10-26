@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { t } from "@/config/messages";
 import { formatPrice } from "@/lib/format";
 import { buildOrderMessage, waLink } from "@/lib/whatsapp";
@@ -24,6 +24,7 @@ export function ProductPurchase(props: {
   whatsapp: string;
   shopName: string;
   productUrl: string;
+  deliveryNote?: string;
 }) {
   const { add } = useCart();
   const firstAvailable = props.variants.find((v) => v.stock > 0) ?? props.variants[0]!;
@@ -41,11 +42,33 @@ export function ProductPurchase(props: {
     return () => clearTimeout(timer);
   }, [justAdded]);
 
+  // Barre d'achat fixe (mobile) : visible quand les boutons principaux sont hors de l'écran
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const [showBar, setShowBar] = useState(false);
+  useEffect(() => {
+    const el = actionsRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver(([entry]) => setShowBar(!entry!.isIntersecting && entry!.boundingClientRect.top < 0), { threshold: 0 });
+    obs.observe(el);
+    // Réserve la hauteur de la barre en bas de page (mobile) pour ne jamais masquer le pied de page
+    document.body.classList.add("has-buybar");
+    return () => {
+      obs.disconnect();
+      document.body.classList.remove("has-buybar");
+    };
+  }, []);
+
   const v = props.variants.find((x) => x.id === variantId) ?? firstAvailable;
   const out = v.stock <= 0;
   const max = Math.max(1, Math.min(99, v.stock));
   const quantity = Math.min(qty, max);
   const discounted = v.compareAtPrice != null && v.compareAtPrice > v.price;
+
+  const addToCart = () => {
+    add({ variantId: v.id, quantity, productName: props.productName, variantLabel: v.label, slug: props.slug, image: props.image, price: v.price });
+    setAdded(true);
+    setJustAdded(Date.now());
+  };
 
   const waText = buildOrderMessage({ shopName: props.shopName, productName: props.productName, format: v.label, quantity, unitPrice: v.price, url });
 
@@ -121,23 +144,41 @@ export function ProductPurchase(props: {
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <button
-          type="button"
-          disabled={out}
-          className="btn-primary flex-1"
-          onClick={() => {
-            add({ variantId: v.id, quantity, productName: props.productName, variantLabel: v.label, slug: props.slug, image: props.image, price: v.price });
-            setAdded(true);
-            setJustAdded(Date.now());
-          }}
-        >
+      {props.deliveryNote ? (
+        <p className="rounded-md bg-karite p-3 text-sm">
+          {props.deliveryNote}{" "}
+          <Link href="/infos/livraison" className="font-bold text-brand underline">Zones et tarifs</Link>
+        </p>
+      ) : null}
+
+      <div ref={actionsRef} className="flex flex-col gap-2 sm:flex-row">
+        <button type="button" disabled={out} className="btn-primary flex-1" onClick={addToCart}>
           {justAdded ? <span key={justAdded} className="anim-feedback">Ajouté ✓</span> : out ? t.outOfStock : t.addToCart}
         </button>
         <a href={waLink(props.whatsapp, waText)} target="_blank" rel="noopener noreferrer" className="btn-wa flex-1" data-testid="wa-order">
           <WhatsAppIcon /> {t.orderViaWhatsapp}
         </a>
       </div>
+      {/* Barre d'achat fixe sur mobile : n'apparaît qu'après avoir dépassé les boutons ; la page réserve un espace en bas (classe has-buybar) */}
+      <div
+        className={`fixed inset-x-0 bottom-0 z-40 border-t border-stone-200 bg-white px-4 pt-2 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] transition-transform duration-200 motion-reduce:transition-none md:hidden ${
+          showBar ? "translate-y-0" : "translate-y-full"
+        }`}
+        style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
+        aria-hidden={!showBar}
+        inert={!showBar}
+      >
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm">{props.productName}, {v.label}</p>
+            <p className="display text-lg tabular-nums">{formatPrice(v.price * quantity)}{quantity > 1 ? <span className="font-sans text-sm font-normal"> ({quantity})</span> : null}</p>
+          </div>
+          <button type="button" disabled={out} className="btn-primary shrink-0" onClick={addToCart}>
+            {justAdded ? "Ajouté ✓" : out ? t.outOfStock : "Ajouter"}
+          </button>
+        </div>
+      </div>
+
       <p role="status" aria-live="polite" className="min-h-6 text-sm text-green-800">
         {added ? (
           <span className="anim-feedback">

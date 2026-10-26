@@ -7,6 +7,7 @@ import type { CartLine } from "./CartProvider";
 export function useQuote(lines: CartLine[], opts: { deliveryZoneId?: string; pickup?: boolean; promoCode?: string }, enabled = true) {
   const [quote, setQuote] = useState<Quote | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const key = JSON.stringify([lines.map((l) => [l.variantId, l.quantity]), opts]);
 
   useEffect(() => {
@@ -23,13 +24,21 @@ export function useQuote(lines: CartLine[], opts: { deliveryZoneId?: string; pic
       body: JSON.stringify({ items: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })), ...opts }),
       signal: ctrl.signal,
     })
-      .then((r) => r.json())
-      .then((q: Quote) => setQuote(q))
-      .catch(() => {})
+      .then((r) => {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json();
+      })
+      .then((q: Quote) => {
+        setQuote(q);
+        setError(false);
+      })
+      .catch((e: unknown) => {
+        if ((e as Error)?.name !== "AbortError") setError(true);
+      })
       .finally(() => setLoading(false));
     return () => ctrl.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, enabled]);
 
-  return { quote, loading };
+  return { quote, loading, error };
 }

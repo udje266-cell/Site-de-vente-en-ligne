@@ -20,6 +20,7 @@ export default async function CheckoutPage() {
       pickupAddress={shopConfig.pickup.address}
       codEnabled={settings.codEnabled}
       onlineEnabled={onlinePaymentAvailable()}
+      whatsapp={settings.whatsapp}
     />
   );
 }

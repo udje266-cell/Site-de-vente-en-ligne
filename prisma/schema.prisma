@@ -128,6 +128,9 @@ model Order {
   paymentMethod   PaymentMethod
   paymentStatus   PaymentStatus @default(PENDING)
   status          OrderStatus
+  // Clé envoyée par le navigateur pour chaque tentative : un double clic ou un nouvel essai
+  // après une coupure réseau renvoie la commande déjà créée au lieu d'en créer une seconde.
+  idempotencyKey  String?       @unique
   // true tant que le stock de la commande est retenu (décrémenté ou réservé)
   stockHeld       Boolean       @default(true)
   promoCodeId     String?

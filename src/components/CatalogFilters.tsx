@@ -1,4 +1,6 @@
+import Link from "next/link";
 import type { SortKey } from "@/lib/catalog";
+import { FiltersToggle } from "./FiltersToggle";
 
 /** Formulaire GET sans JavaScript : tri, prix min/max, attributs. */
 export function CatalogFilters({
@@ -13,7 +15,8 @@ export function CatalogFilters({
   hidden?: Record<string, string>;
 }) {
   return (
-    <form action={action} method="get" className="card mb-4 grid grid-cols-2 gap-3 p-3 sm:grid-cols-4">
+    <FiltersToggle active={hasActiveFilters(current)}>
+    <form action={action} method="get" className="grid grid-cols-2 gap-3 p-3 sm:grid-cols-4">
       {Object.entries(hidden).map(([k, v]) => (
         <input key={k} type="hidden" name={k} value={v} />
       ))}
@@ -44,10 +47,14 @@ export function CatalogFilters({
           </select>
         </div>
       ))}
-      <div className="col-span-2 flex items-end sm:col-span-1">
+      <div className="col-span-2 flex flex-col justify-end gap-2 sm:col-span-1">
         <button type="submit" className="btn-primary w-full">Appliquer</button>
+        {hasActiveFilters(current) ? (
+          <Link href={resetHref(action, hidden)} className="btn-outline w-full">Réinitialiser les filtres</Link>
+        ) : null}
       </div>
     </form>
+    </FiltersToggle>
   );
 }
 
@@ -64,4 +71,14 @@ export function parseFilters(sp: SP) {
     if (k.startsWith("a.") && val) attrs[k.slice(2)] = val;
   }
   return { sort, min: num(one(sp.min)), max: num(one(sp.max)), attrs };
+}
+
+export function hasActiveFilters(f: { sort: SortKey; min?: number; max?: number; attrs: Record<string, string> }) {
+  return f.sort !== "nouveautes" || f.min != null || f.max != null || Object.keys(f.attrs).length > 0;
+}
+
+/** URL sans filtres (conserve uniquement la recherche éventuelle). */
+export function resetHref(action: string, hidden: Record<string, string> = {}) {
+  const qs = new URLSearchParams(Object.entries(hidden).filter(([, v]) => v)).toString();
+  return qs ? `${action}?${qs}` : action;
 }

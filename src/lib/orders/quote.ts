@@ -21,6 +21,8 @@ export type QuoteLine = {
   quantity: number;
   stock: number;
   available: boolean;
+  /** Autres formats actifs du même produit (pour changer de format dans le panier) */
+  options: { variantId: string; label: string; price: number; stock: number }[];
 };
 
 /** Devis calculé côté serveur à partir de la base : sert à afficher le panier et le récapitulatif. */
@@ -29,7 +31,14 @@ export async function quoteCart(input: z.infer<typeof quoteSchema>) {
   const ids = [...new Set(input.items.map((i) => i.variantId))];
   const variants = await prisma.productVariant.findMany({
     where: { id: { in: ids } },
-    include: { product: { include: { images: { orderBy: { position: "asc" }, take: 1 } } } },
+    include: {
+      product: {
+        include: {
+          images: { orderBy: { position: "asc" }, take: 1 },
+          variants: { where: { isActive: true }, orderBy: { position: "asc" } },
+        },
+      },
+    },
   });
   const byId = new Map(variants.map((v) => [v.id, v]));
   const lines: QuoteLine[] = [];
@@ -47,6 +56,7 @@ export async function quoteCart(input: z.infer<typeof quoteSchema>) {
       quantity: it.quantity,
       stock: Math.max(0, v.stock),
       available,
+      options: v.product.variants.map((o) => ({ variantId: o.id, label: o.label, price: o.price, stock: Math.max(0, o.stock) })),
     });
   }
   const priced = lines.filter((l) => l.available);
@@ -79,6 +89,8 @@ export async function quoteCart(input: z.infer<typeof quoteSchema>) {
     promoError,
     codAvailable: isCodAvailable(totals.total, settings),
     freeShippingThreshold: settings.freeShippingThreshold,
+    /** Montant restant pour la livraison offerte (calculé comme à la commande : sous-total après remise) */
+    freeShippingRemaining: settings.freeShippingThreshold > 0 ? Math.max(0, settings.freeShippingThreshold - (totals.subtotal - totals.discount)) : null,
   };
 }
 

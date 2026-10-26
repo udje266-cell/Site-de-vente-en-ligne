@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { shopConfig } from "@/config/shop";
-import "@fontsource-variable/archivo/wdth.css";
+import "@fontsource/archivo-narrow/latin-700.css";
 import "@fontsource/atkinson-hyperlegible/400.css";
 import "@fontsource/atkinson-hyperlegible/700.css";
 import "./globals.css";

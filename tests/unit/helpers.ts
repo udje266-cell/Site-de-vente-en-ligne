@@ -15,4 +15,4 @@ export async function fixture(stock = 5, price = 2500) {
   return { variant: product.variants[0]!, zone };
 }
 
-export const customer = { customerName: "Awa Koné", customerPhone: "+2250700000000", deliveryAddress: "Cocody, près de la pharmacie", pickup: false };
+export const customer = { customerName: "Awa Koné", customerPhone: "+2250700000000", deliveryDistrict: "Angré", deliveryLandmark: "près de la pharmacie", pickup: false };

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 import { OrderError } from "./errors";
 import { computeTotals, evaluatePromo, isCodAvailable } from "./pricing";
-import type { CheckoutData } from "./schema";
+import { formatDeliveryAddress, type CheckoutData } from "./schema";
 
 type Tx = Prisma.TransactionClient;
 
@@ -35,6 +35,31 @@ type LockedVariant = {
  * avec verrou de ligne (SELECT … FOR UPDATE) pour empêcher toute survente.
  */
 export async function createOrder(data: CheckoutData): Promise<Order> {
+  return (await createOrderOnce(data)).order;
+}
+
+/**
+ * Crée la commande une seule fois par clé d'idempotence : un double clic ou un nouvel essai après
+ * une coupure réseau renvoie la commande existante (duplicate = true, aucune notification à renvoyer).
+ */
+export async function createOrderOnce(data: CheckoutData): Promise<{ order: Order; duplicate: boolean }> {
+  if (data.idempotencyKey) {
+    const existing = await prisma.order.findUnique({ where: { idempotencyKey: data.idempotencyKey } });
+    if (existing) return { order: existing, duplicate: true };
+  }
+  try {
+    return { order: await createOrderTx(data), duplicate: false };
+  } catch (e) {
+    // Deux requêtes simultanées avec la même clé : la seconde échoue sur la contrainte unique
+    if (data.idempotencyKey && e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      const existing = await prisma.order.findUnique({ where: { idempotencyKey: data.idempotencyKey } });
+      if (existing) return { order: existing, duplicate: true };
+    }
+    throw e;
+  }
+}
+
+async function createOrderTx(data: CheckoutData): Promise<Order> {
   const settings = await getSettings();
 
   // Regroupe les lignes en double
@@ -113,7 +138,8 @@ export async function createOrder(data: CheckoutData): Promise<Order> {
           customerEmail: data.customerEmail ?? null,
           pickup: data.pickup,
           deliveryZoneId,
-          deliveryAddress: data.pickup ? "" : data.deliveryAddress,
+          deliveryAddress: data.pickup ? "" : formatDeliveryAddress(data),
+          idempotencyKey: data.idempotencyKey ?? null,
           deliveryNote: data.deliveryNote || null,
           ...totals,
           paymentMethod: data.paymentMethod,

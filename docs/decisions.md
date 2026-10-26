@@ -61,3 +61,15 @@ Choix faits faute de précision dans la spec (§11 : « fais le choix le plus si
 - **WhatsApp** : numéro par défaut unique dans `src/config/shop.ts` (+225 01 01 11 40 70, confirmé par la boutique), modifiable dans Admin → Réglages. Le lien produit du message est construit avec le domaine utilisé par le visiteur.
 - **Frise de motifs retirée** : décorative, sans rapport avec les produits.
 - **Bouton WhatsApp flottant** masqué sur la fiche produit, le panier et la commande (il masquait des prix ; ces pages ont leur propre bouton).
+
+## Expérience d'achat et fiabilité (refonte 2)
+- **Accueil** : titre court, boutons « Découvrir les produits » et « Commander sur WhatsApp ». La composition de droite présente les 4 familles avec un vrai produit, le nombre de produits et le prix de départ réels (pas d'image générée présentée comme une photo). Un produit de la bannière ne réapparaît pas dans les sections ; « Meilleures ventes » s'affiche seulement s'il y a des ventes, sinon « Notre sélection ».
+- **Cartes produits** : choix du format directement sur la carte, prix et disponibilité du format choisi, ajout au panier sans quitter la liste.
+- **Filtres** : dans l'URL (partage, retour arrière), bouton « Réinitialiser les filtres », repliés sur mobile. État « aucun résultat » avec propositions (réinitialiser, tout le catalogue, demander sur WhatsApp).
+- **Fiche produit** : galerie avec flèches et clavier, estimation de livraison calculée à partir des zones et réglages réels, barre d'achat fixe sur mobile (espace réservé en bas de page), produits de la même catégorie.
+- **Panier** : miniature, format modifiable, prix unitaire et total par ligne, retrait annulable pendant 8 s, signalement des prix modifiés, montant restant pour la livraison offerte (seuil des Réglages, calculé après remise, toutes zones). Aucun compte à rebours ni faux indicateur.
+- **Commande** : quartier et point de repère séparés (enregistrés dans l'adresse), erreurs à côté des champs, valeurs conservées, « Total provisoire » tant que la commune n'est pas choisie, uniquement les moyens de paiement réellement disponibles.
+- **Anti-doublon** : chaque tentative envoie une clé (`Order.idempotencyKey`, unique). Double clic, nouvel essai après coupure réseau ou envois simultanés renvoient la même commande, sans nouvelle notification. Le panier n'est vidé que sur la page de confirmation.
+- **Suivi** : recherche en POST (le téléphone n'apparaît plus dans l'URL), 20 essais par IP et 8 par référence sur 15 min, données réduites (prénom, téléphone masqué, commune ; ni adresse, ni e-mail, ni notes internes), progression en 5 étapes et contact WhatsApp prérempli avec la référence.
+- **Admin** : filtres de date (du / au, raccourcis) combinés au statut, nombre et total des commandes filtrées. Toutes les actions vérifient la session côté serveur (`requireAdmin`).
+- **Performance** : police des titres remplacée par Archivo Narrow 700 (12 Ko au lieu de 89 Ko), icône réduite (6 Ko au lieu de 50 Ko).

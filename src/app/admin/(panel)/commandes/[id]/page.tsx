@@ -60,7 +60,7 @@ export default async function AdminOrderPage({ params }: { params: Promise<{ id:
           <p key={p.id} className="text-xs text-stone-600">Transaction {p.transactionId} : {paymentStatusLabels[p.status]}</p>
         ))}
       </section>
-      <OrderTimeline events={order.events} />
+      <OrderTimeline events={order.events} internal />
     </div>
   );
 }

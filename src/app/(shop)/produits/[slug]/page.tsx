@@ -3,10 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { ProductGallery } from "@/components/ProductGallery";
+import { ProductGrid } from "@/components/ProductCard";
 import { ProductPurchase } from "@/components/ProductPurchase";
 import { usageLabels } from "@/config/messages";
 import { appUrl } from "@/lib/app-url";
+import { productCardInclude } from "@/lib/catalog";
 import { prisma } from "@/lib/db";
+import { getDeliveryEstimate } from "@/lib/delivery";
 import { formatPrice } from "@/lib/format";
 import { renderMarkdown } from "@/lib/markdown";
 import { getSettings } from "@/lib/settings";
@@ -32,6 +35,20 @@ const getProduct = cache((slug: string) =>
   }),
 );
 
+/** Produits complémentaires : d'abord la même catégorie, puis d'autres produits disponibles (4 au plus). */
+async function getRelated(productId: string, categoryId: string | null) {
+  const where = { isActive: true, id: { not: productId }, variants: { some: { isActive: true, stock: { gt: 0 } } } };
+  const same = categoryId ? await prisma.product.findMany({ where: { ...where, categoryId }, include: productCardInclude, take: 4 }) : [];
+  if (same.length >= 4) return { title: "Dans la même catégorie", items: same };
+  const others = await prisma.product.findMany({
+    where: { ...where, id: { notIn: [productId, ...same.map((p) => p.id)] } },
+    include: productCardInclude,
+    orderBy: { isFeatured: "desc" },
+    take: 4 - same.length,
+  });
+  return { title: same.length ? "Dans la même catégorie et ailleurs" : "Autres produits", items: [...same, ...others] };
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await getProduct((await params).slug);
   if (!p || p.variants.length === 0) return {};
@@ -56,7 +73,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductPage({ params }: Props) {
   const product = await getProduct((await params).slug);
   if (!product || product.variants.length === 0) notFound();
-  const settings = await getSettings();
+  const [settings, deliveryNote, related] = await Promise.all([getSettings(), getDeliveryEstimate(), getRelated(product.id, product.categoryId)]);
   const url = `${appUrl()}/produits/${product.slug}`;
 
   const jsonLd = {
@@ -87,6 +104,7 @@ export default async function ProductPage({ params }: Props) {
   const askText = `Bonjour ${settings.shopName}, pouvez-vous me donner plus d'informations sur « ${product.name} » ?\n${url}`;
 
   return (
+    <div className="space-y-12">
     <article className="grid gap-6 md:grid-cols-2 md:gap-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <div className="min-w-0">
@@ -117,6 +135,7 @@ export default async function ProductPage({ params }: Props) {
           whatsapp={settings.whatsapp}
           shopName={settings.shopName}
           productUrl={url}
+          deliveryNote={deliveryNote}
           variants={product.variants.map((v) => ({
             id: v.id,
             label: v.label,
@@ -126,10 +145,7 @@ export default async function ProductPage({ params }: Props) {
             netWeight: v.netWeight,
           }))}
         />
-        <p className="text-sm text-stone-700">
-          Livraison à Abidjan et à l&apos;intérieur du pays{product.leadTimeNote ? ` : ${product.leadTimeNote}` : ""}.{" "}
-          <Link href="/infos/livraison" className="underline">Zones et tarifs</Link>
-        </p>
+        {product.leadTimeNote ? <p className="text-sm text-stone-700">Délai propre à ce produit : {product.leadTimeNote}.</p> : null}
 
         <section aria-labelledby="h-infos" className="border-t border-stone-200 pt-5">
           <h2 id="h-infos" className="mb-3 text-2xl">Informations produit</h2>
@@ -157,5 +173,12 @@ export default async function ProductPage({ params }: Props) {
         </section>
       </div>
     </article>
+    {related.items.length > 0 ? (
+      <section aria-labelledby="h-related">
+        <h2 id="h-related" className="mb-4 text-3xl">{related.title}</h2>
+        <ProductGrid products={related.items} />
+      </section>
+    ) : null}
+    </div>
   );
 }

@@ -48,15 +48,16 @@ async function discountedProductIds(): Promise<string[]> {
  * Sections de l'accueil sans doublon : un produit n'apparaît que dans une seule section
  * (promotions, puis meilleures ventes, puis nouveautés).
  */
-export async function getHomeSections(perSection = 4) {
+export async function getHomeSections(perSection = 4, exclude: string[] = []) {
   const promoIds = await discountedProductIds();
   const promos = await prisma.product.findMany({
-    where: { ...visible, id: { in: promoIds } },
+    where: { ...visible, id: { in: promoIds.filter((id) => !exclude.includes(id)) } },
     include: productCardInclude,
     orderBy: { updatedAt: "desc" },
     take: perSection,
   });
-  const shown = new Set(promos.map((p) => p.id));
+  // Produits déjà visibles (bannière, promotions) : exclus de « Notre sélection » et des nouveautés
+  const shown = new Set([...exclude, ...promos.map((p) => p.id)]);
 
   const sold = await prisma.$queryRaw<{ productId: string }[]>`
     SELECT v."productId" FROM "OrderItem" i
@@ -161,13 +162,17 @@ export const families = [
 
 const normalize = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-/** Nombre de produits et prix de départ réels pour chaque famille (rien d'inventé). */
+/**
+ * Pour chaque famille : nombre de produits, prix de départ réels et un produit représentatif
+ * (mis en avant de préférence) pour la composition de la bannière. Rien d'inventé.
+ */
 export async function getFamilies() {
-  const products = await prisma.product.findMany({ where: visible, include: { variants: { where: { isActive: true } } } });
+  const products = await prisma.product.findMany({ where: visible, include: productCardInclude, orderBy: { createdAt: "asc" } });
   return families.map((f) => {
     const list = products.filter((p) => f.test(normalize(p.name)));
     const prices = list.flatMap((p) => p.variants.map((v) => v.price));
-    return { key: f.key, title: f.title, line: f.line, href: f.href, count: list.length, minPrice: prices.length ? Math.min(...prices) : null };
+    const pick = list.find((p) => p.isFeatured && p.images.length) ?? list.find((p) => p.images.length) ?? list.find((p) => p.isFeatured) ?? list[0] ?? null;
+    return { key: f.key, title: f.title, line: f.line, href: f.href, count: list.length, minPrice: prices.length ? Math.min(...prices) : null, pick };
   });
 }
 

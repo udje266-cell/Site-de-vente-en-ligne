@@ -14,7 +14,7 @@
   --color-nere: #2e6b4e;
   --color-ink: #13201a;
   --font-sans: "Atkinson Hyperlegible", system-ui, sans-serif;
-  --font-display: "Archivo Variable", "Arial Narrow", system-ui, sans-serif;
+  --font-display: "Archivo Narrow", "Arial Narrow", system-ui, sans-serif;
 }
 
 html {
@@ -30,14 +30,17 @@ body {
   line-height: 1.5;
 }
 
+@media (max-width: 767px) {
+  body.has-buybar { padding-bottom: 5.5rem; }
+}
+
 h1, h2, h3 {
   scroll-margin-top: 8rem; /* en-tête collant */
 }
 
 h1, h2, h3, .display {
   font-family: var(--font-display);
-  font-stretch: 75%;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 1.05;
 }
@@ -65,6 +68,8 @@ h1, h2, h3, .display {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Bannière : les vignettes produits apparaissent l'une après l'autre (une seule fois) */
+.hero-tile { animation: rise-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .anim-pop { animation: pop 350ms cubic-bezier(0.34, 1.56, 0.64, 1); }
 .anim-feedback { animation: rise-in 220ms ease-out both; }
 
@@ -76,7 +81,9 @@ a, button, .btn { transition: background-color 150ms ease, color 150ms ease, bor
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
   }
-  .anim-pop { animation: none !important; }
+  /* Bannière : les vignettes produits apparaissent l'une après l'autre (une seule fois) */
+.hero-tile { animation: rise-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-pop { animation: none !important; }
   .anim-feedback { animation: fade-in 150ms ease-out both !important; }
 }
 

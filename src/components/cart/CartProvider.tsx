@@ -20,6 +20,10 @@ type CartCtx = {
   add: (line: CartLine) => void;
   setQuantity: (variantId: string, quantity: number) => void;
   remove: (variantId: string) => void;
+  /** Remet un article retiré à sa place (annulation du retrait). */
+  restore: (line: CartLine, index: number) => void;
+  /** Change le format d'une ligne (fusionne avec la ligne existante du même format). */
+  changeVariant: (fromVariantId: string, to: Omit<CartLine, "quantity">) => void;
   clear: () => void;
   replace: (lines: CartLine[]) => void;
 };
@@ -39,6 +43,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       /* stockage indisponible */
     }
     setReady(true);
+    // Panier partagé entre onglets : un ajout dans un onglet apparaît dans les autres
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== KEY) return;
+      try {
+        setLines(e.newValue ? (JSON.parse(e.newValue) as CartLine[]) : []);
+      } catch {
+        /* ignore */
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   useEffect(() => {
@@ -65,12 +80,37 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     [],
   );
   const remove = useCallback((variantId: string) => setLines((prev) => prev.filter((l) => l.variantId !== variantId)), []);
+  const restore = useCallback(
+    (line: CartLine, index: number) =>
+      setLines((prev) => {
+        if (prev.some((l) => l.variantId === line.variantId)) return prev;
+        const next = [...prev];
+        next.splice(Math.min(index, next.length), 0, line);
+        return next;
+      }),
+    [],
+  );
+  const changeVariant = useCallback(
+    (fromVariantId: string, to: Omit<CartLine, "quantity">) =>
+      setLines((prev) => {
+        const from = prev.find((l) => l.variantId === fromVariantId);
+        if (!from || fromVariantId === to.variantId) return prev;
+        const existing = prev.find((l) => l.variantId === to.variantId);
+        if (existing) {
+          return prev
+            .filter((l) => l.variantId !== fromVariantId)
+            .map((l) => (l.variantId === to.variantId ? { ...l, quantity: Math.min(99, l.quantity + from.quantity) } : l));
+        }
+        return prev.map((l) => (l.variantId === fromVariantId ? { ...to, quantity: from.quantity } : l));
+      }),
+    [],
+  );
   const clear = useCallback(() => setLines([]), []);
   const replace = useCallback((l: CartLine[]) => setLines(l), []);
 
   const value = useMemo(
-    () => ({ lines, ready, count: lines.reduce((s, l) => s + l.quantity, 0), add, setQuantity, remove, clear, replace }),
-    [lines, ready, add, setQuantity, remove, clear, replace],
+    () => ({ lines, ready, count: lines.reduce((s, l) => s + l.quantity, 0), add, setQuantity, remove, restore, changeVariant, clear, replace }),
+    [lines, ready, add, setQuantity, remove, restore, changeVariant, clear, replace],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

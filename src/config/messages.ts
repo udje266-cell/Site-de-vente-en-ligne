@@ -37,6 +37,7 @@ export const t = {
   inStock: (n: number) => (n <= 5 ? `Plus que ${n} en stock` : "En stock"),
   newArrivals: "Nouveautés",
   bestSellers: "Meilleures ventes",
+  selection: "Notre sélection",
   promotions: "Promotions",
   contactWhatsapp: "Écrire sur WhatsApp",
   errorTitle: "Oups, une erreur est survenue",
