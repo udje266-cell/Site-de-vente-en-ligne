@@ -50,7 +50,8 @@ Toutes sont documentées dans [`.env.example`](.env.example). En production, au 
 ### Vercel + Neon (ou Supabase)
 1. Créer une base PostgreSQL (Neon ou Supabase) et récupérer l'URL de connexion.
 2. Importer le dépôt dans Vercel et renseigner les variables d'environnement.
-3. Commande de build : `npx prisma migrate deploy && npm run build`.
+3. Variables : `DATABASE_URL` = URL du **pooler** (`?pgbouncer=true&connection_limit=1`), et lancez les migrations avec l'URL **directe** : `DATABASE_URL=<url directe> npx prisma migrate deploy` (depuis votre poste ou une étape de build dédiée).
+   Sur Supabase, la migration `db_hardening` active la Row Level Security sur toutes les tables : l'API de données publique (clé `anon`) ne voit rien, seule l'application y accède. **Toute nouvelle table doit aussi recevoir `ENABLE ROW LEVEL SECURITY`.**
 4. Lancer le seed une fois depuis votre poste : `DATABASE_URL=… ADMIN_EMAIL=… ADMIN_PASSWORD=… npm run db:seed`.
 5. `vercel.json` déclare une tâche planifiée toutes les 10 min sur `/api/cron/expire-orders`. Vercel envoie automatiquement `Authorization: Bearer $CRON_SECRET`.
 6. Images : `IMAGE_STORAGE=cloudinary` (le disque Vercel n'est pas persistant).

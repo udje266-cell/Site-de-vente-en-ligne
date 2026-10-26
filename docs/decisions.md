@@ -45,3 +45,10 @@ Choix faits faute de précision dans la spec (§11 : « fais le choix le plus si
 
 ## Tests
 - `prisma migrate reset` est bloqué lorsqu'il est lancé par un agent IA : les tests utilisent `migrate deploy` puis `TRUNCATE`.
+
+## Base de données (revue « Supabase Postgres best practices »)
+- Dates en `timestamptz` ; index sur toutes les clés étrangères ; index composite `Order(status, createdAt)` pour la liste admin et l'expiration des paiements.
+- Contraintes `CHECK` en base : stock ≥ 0 (dernière barrière contre la survente), montants positifs, `total = sous-total − remise + livraison`, pourcentage ≤ 100.
+- RLS activée sans politique sur toutes les tables (refus par défaut pour `anon`/`authenticated` sur Supabase). L'application utilise le rôle propriétaire, non soumis à la RLS.
+- Pool de connexions obligatoire en serverless (voir `.env.example`). Les transactions n'incluent aucun appel HTTP (CinetPay est appelé hors transaction) ; les verrous de variantes sont pris dans l'ordre des identifiants (pas d'interblocage).
+- Non retenu pour l'instant : clés primaires `bigint identity`/UUIDv7 au lieu de `cuid` (les cuid sont déjà ordonnés dans le temps ; migration coûteuse) ; index GIN pour la recherche (`unaccent` n'est pas IMMUTABLE, il faudrait une fonction enveloppe : inutile tant que le catalogue compte moins de quelques milliers de produits) ; montants en `integer` plutôt que `numeric`, car le FCFA n'a pas de décimales.

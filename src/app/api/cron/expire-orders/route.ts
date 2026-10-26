@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
+import { prisma } from "@/lib/db";
 import { expireStalePayments } from "@/lib/payments/process";
 
 function authorized(req: Request): boolean {
@@ -14,7 +15,9 @@ function authorized(req: Request): boolean {
 async function handler(req: Request) {
   if (!authorized(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const cancelled = await expireStalePayments();
-  return NextResponse.json({ cancelled });
+  // Purge des compteurs de tentatives expirés (sinon la table grossit indéfiniment)
+  const { count: purged } = await prisma.rateLimit.deleteMany({ where: { resetAt: { lt: new Date() } } });
+  return NextResponse.json({ cancelled, purged });
 }
 
 export { handler as GET, handler as POST };
