@@ -108,3 +108,7 @@ a, button, .btn { transition: background-color 150ms ease, color 150ms ease, bor
 .prose-shop ul { @apply list-disc pl-6; }
 .prose-shop ol { @apply list-decimal pl-6; }
 .prose-shop a { @apply text-brand underline; }
+.prose-shop table { @apply mb-4 w-full border-collapse text-sm; }
+.prose-shop th, .prose-shop td { @apply border-b border-stone-200 px-2 py-2 text-left align-top; }
+.prose-shop th { @apply font-bold; }
+.prose-shop td:nth-child(2) { @apply whitespace-nowrap tabular-nums; }

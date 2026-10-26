@@ -13,11 +13,11 @@ export function WhatsAppIcon({ className = "h-6 w-6" }: { className?: string }) 
 
 /**
  * Bouton flottant. Masqué sur les pages qui ont déjà leur propre bouton WhatsApp
- * ou un formulaire (fiche produit, panier, commande), pour ne pas cacher de contenu.
+ * ou un formulaire (fiche produit, panier, commande, pages d'information), pour ne pas cacher de contenu.
  */
 export function FloatingWhatsApp({ phone }: { phone: string }) {
   const pathname = usePathname();
-  if (/^\/(produits\/[^/]+|panier|commande)/.test(pathname)) return null;
+  if (/^\/(produits\/[^/]+|panier|commande|infos\/)/.test(pathname)) return null;
   return (
     <a
       href={waLink(phone, "Bonjour, j'ai une question sur vos produits.")}

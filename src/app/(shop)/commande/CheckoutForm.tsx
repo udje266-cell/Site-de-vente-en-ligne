@@ -67,7 +67,7 @@ export function CheckoutForm(props: { zones: Zone[]; pickupEnabled: boolean; pic
           {props.pickupEnabled ? (
             <label className="flex min-h-11 items-center gap-2">
               <input type="checkbox" name="pickup" checked={pickup} onChange={(e) => setPickup(e.target.checked)} className="h-5 w-5" />
-              Retrait sur place (gratuit) – {props.pickupAddress}
+              Retrait sur place, sans frais de livraison ({props.pickupAddress || "adresse communiquée sur WhatsApp"})
             </label>
           ) : null}
           {!pickup ? (

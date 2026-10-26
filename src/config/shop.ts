@@ -23,7 +23,7 @@ export const shopConfig = {
   timeZone: "Africa/Abidjan",
   pickup: {
     enabled: true,
-    address: "Cocody, Abidjan (adresse exacte communiquée par WhatsApp)", // PLACEHOLDER
+    address: "", // À CONFIRMER : adresse de retrait (vide = communiquée sur WhatsApp)
   },
   /** Réseaux sociaux : laisser vide ("") pour ne pas afficher le lien. */
   social: {

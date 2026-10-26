@@ -21,8 +21,12 @@ test("création d'un produit avec photo", async ({ page }) => {
   await page.getByLabel("Format").fill("400 g");
   await page.getByLabel("Catégorie").selectOption({ label: "Miel" });
   await page.getByRole("button", { name: "Créer le produit" }).click();
-  await expect(page.getByText("Produit créé")).toBeVisible();
+  // En mode dev, l'écriture de la photo dans public/uploads déclenche un rechargement (Fast Refresh)
+  // qui peut interrompre la redirection : on attend la création en base, puis on ouvre la page du produit.
+  await expect.poll(() => db.product.count({ where: { name: "Miel de karité test" } }), { timeout: 20_000 }).toBe(1);
   const product = await db.product.findFirstOrThrow({ where: { name: "Miel de karité test" }, include: { images: true, variants: true } });
+  await page.goto(`/admin/produits/${product.id}?cree=1`);
+  await expect(page.getByText("Produit créé")).toBeVisible();
   expect(product.images).toHaveLength(1);
   expect(product.images[0]!.url).toMatch(/\.webp$/);
   expect(product.variants[0]!.price).toBe(4500);

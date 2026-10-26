@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { defaultPages } from "../src/content/pages";
 
 const prisma = new PrismaClient();
 
@@ -36,11 +37,6 @@ const products: P[] = [
 const zones = ["Abobo", "Adjamé", "Attécoubé", "Cocody", "Koumassi", "Marcory", "Plateau", "Port-Bouët", "Treichville", "Yopougon", "Bingerville", "Anyama", "Songon"];
 const zoneFee = (z: string) => (["Bingerville", "Anyama", "Songon"].includes(z) ? 2500 : 1500);
 
-const pages = [
-  ["a-propos", "À propos"], ["livraison", "Livraison"], ["retours", "Retours"], ["cgv", "Conditions générales de vente"],
-  ["confidentialite", "Politique de confidentialité"], ["mentions-legales", "Mentions légales"], ["contact", "Contact"],
-] as const;
-
 async function main() {
   for (const c of categories) await prisma.category.upsert({ where: { slug: c.slug }, create: c, update: {} });
   const catIds = Object.fromEntries((await prisma.category.findMany()).map((c) => [c.slug, c.id]));
@@ -71,11 +67,8 @@ async function main() {
     where: { code: "BIENVENUE10" }, create: { code: "BIENVENUE10", type: "PERCENT", value: 10, minSubtotal: 5000 }, update: {},
   });
 
-  for (const [slug, title] of pages)
-    await prisma.page.upsert({
-      where: { slug }, update: {},
-      create: { slug, title, body: `# ${title}\n\n_Texte modèle à compléter depuis l'administration (Admin → Pages)._\n` },
-    });
+  for (const [slug, page] of Object.entries(defaultPages))
+    await prisma.page.upsert({ where: { slug }, update: {}, create: { slug, title: page.title, body: page.body } });
 
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;
