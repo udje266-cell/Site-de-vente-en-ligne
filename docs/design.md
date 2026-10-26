@@ -15,3 +15,9 @@ Sujet : produits du terroir du nord ivoirien (karité, miel, mil, maïs), vendus
 - **Élément signature** : la frise `KorhogoBand` (poisson, chevrons, oiseau, points de semis), inspirée des toiles peintes de Korhogo. Elle n'apparaît qu'en bas du hero et en haut du pied de page.
 - **Principes** : fond blanc, alignement à gauche, fiches produit sans bordure ni ombre, chaque catégorie dans la couleur de sa matière, aucune animation décorative.
 - Les couleurs définitives de la boutique se règlent dans le bloc `@theme` de `src/app/globals.css` et dans `src/config/shop.ts`.
+
+## Animations
+- **Un seul moment au chargement** : la frise du hero se dévoile de gauche à droite (`.anim-reveal`, 900 ms).
+- **Retours aux actions** : bouton « Ajouté ✓ » pendant 1,5 s et rebond de la pastille du panier (`.anim-pop`), messages de confirmation en fondu (`.anim-feedback`), dans la boutique et l'admin.
+- CSS uniquement (aucune bibliothèque), propriétés peu coûteuses (`transform`, `opacity`, `clip-path`) pour les téléphones d'entrée de gamme.
+- **« Réduire les animations »** (réglage du téléphone) : le rebond et le déplacement sont supprimés, le dévoilement et les messages deviennent des fondus de 150 ms, et les transitions de couleur sont conservées.

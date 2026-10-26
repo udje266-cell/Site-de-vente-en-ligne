@@ -39,7 +39,7 @@ export function StatusButtons({ orderId, next, others }: { orderId: string; next
         </details>
       ) : null}
       {state.error ? <p role="alert" className="text-sm text-red-700">{state.error}</p> : null}
-      {state.ok ? <p role="status" className="text-sm text-green-800">Statut mis à jour, client notifié.</p> : null}
+      {state.ok ? <p role="status" className="anim-feedback text-sm text-green-800">Statut mis à jour, client notifié.</p> : null}
     </form>
   );
 }

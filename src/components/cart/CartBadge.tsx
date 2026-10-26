@@ -13,7 +13,7 @@ export function CartBadge() {
         <circle cx="17" cy="20" r="1.5" />
       </svg>
       {count > 0 ? (
-        <span className="absolute -right-0.5 -top-0.5 min-w-5 rounded-full bg-accent px-1 text-center text-xs font-bold text-stone-900" data-testid="cart-count">
+        <span key={count} className="anim-pop absolute -right-0.5 -top-0.5 min-w-5 rounded-full bg-accent px-1 text-center text-xs font-bold text-stone-900" data-testid="cart-count">
           {count}
         </span>
       ) : null}

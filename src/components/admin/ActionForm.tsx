@@ -22,8 +22,8 @@ export function ActionForm({
   return (
     <form action={formAction} className={className} encType={encType}>
       {children}
-      {state.error ? <p role="alert" className="text-sm text-red-700">{state.error}</p> : null}
-      {state.ok ? <p role="status" className="text-sm text-green-800">{state.ok}</p> : null}
+      {state.error ? <p role="alert" className="anim-feedback text-sm text-red-700">{state.error}</p> : null}
+      {state.ok ? <p role="status" className="anim-feedback text-sm text-green-800">{state.ok}</p> : null}
       <button disabled={pending} className="btn-primary w-full sm:w-auto">{pending ? "Enregistrement…" : submitLabel}</button>
     </form>
   );

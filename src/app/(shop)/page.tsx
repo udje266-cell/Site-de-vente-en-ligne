@@ -28,7 +28,7 @@ export default async function HomePage() {
         <p className="mt-4 max-w-[46ch] text-white/85">
           Payez à la livraison ou par Mobile Money. Une question ? Écrivez-nous sur WhatsApp, on répond vite.
         </p>
-        <KorhogoBand className="mt-8 block" color="#f2a900" />
+        <KorhogoBand className="anim-reveal mt-8 block" color="#f2a900" />
       </section>
 
       <nav aria-label="Nos produits">

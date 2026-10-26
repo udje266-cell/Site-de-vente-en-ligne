@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { t } from "@/config/messages";
 import { waLink } from "@/lib/whatsapp";
 import { useCart } from "./cart/CartProvider";
@@ -23,6 +23,13 @@ export function ProductPurchase(props: {
   const [variantId, setVariantId] = useState(firstAvailable.id);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [justAdded, setJustAdded] = useState(0);
+  // Le bouton affiche « Ajouté ✓ » pendant 1,5 s après chaque ajout
+  useEffect(() => {
+    if (!justAdded) return;
+    const t = setTimeout(() => setJustAdded(0), 1500);
+    return () => clearTimeout(t);
+  }, [justAdded]);
   const v = props.variants.find((x) => x.id === variantId) ?? firstAvailable;
   const out = v.stock <= 0;
 
@@ -61,9 +68,10 @@ export function ProductPurchase(props: {
           onClick={() => {
             add({ variantId: v.id, quantity: qty, productName: props.productName, variantLabel: v.label, slug: props.slug, image: props.image, price: v.price });
             setAdded(true);
+            setJustAdded(Date.now());
           }}
         >
-          {t.addToCart}
+          {justAdded ? <span key={justAdded} className="anim-feedback">Ajouté ✓</span> : t.addToCart}
         </button>
         <a href={waLink(props.whatsapp, waText)} target="_blank" rel="noopener noreferrer" className="btn-wa flex-1">
           <WhatsAppIcon /> {t.orderViaWhatsapp}
@@ -71,9 +79,9 @@ export function ProductPurchase(props: {
       </div>
       <p role="status" aria-live="polite" className="text-sm text-green-800">
         {added ? (
-          <>
+          <span className="anim-feedback">
             Ajouté au panier. <Link href="/panier" className="font-semibold underline">Voir le panier</Link>
-          </>
+          </span>
         ) : null}
       </p>
     </div>
