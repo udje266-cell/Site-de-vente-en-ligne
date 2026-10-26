@@ -54,11 +54,18 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
         <KorhogoBand className="block" color="#e59900" />
         <div className="mx-auto grid max-w-6xl gap-6 px-3 py-8 text-sm sm:grid-cols-3">
           <div>
-            <div className="w-40 rounded-md bg-white p-2">
-              <Image src={shopConfig.logoFull} alt={settings.shopName} width={640} height={574} sizes="160px" className="h-auto w-full" />
+            <div className="max-w-sm rounded-md bg-white p-3">
+              <Image
+                src="/banniere.webp"
+                alt={`${settings.shopName} – Miel de Korhogo, 100 % naturel`}
+                width={900}
+                height={306}
+                sizes="(max-width: 640px) 90vw, 384px"
+                className="h-auto w-full"
+              />
             </div>
             
-            <p className="mt-1">{shopConfig.city}, Côte d&apos;Ivoire</p>
+            <p className="mt-3">{shopConfig.city}, Côte d&apos;Ivoire</p>
           </div>
           <nav aria-label="Informations">
             <ul className="space-y-1">
